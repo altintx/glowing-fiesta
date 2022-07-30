@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement, useState } from 'react';
 import MainMenu from './screen/main-menu';
 import { Socket } from 'socket.io-client'
 import GameMenu from './screen/game-menu';
@@ -24,10 +24,10 @@ function TileInspector({tile }: { tile: Tile | null }) {
     {tile && <>
       <div>cover: {tile.cover}</div>
       <div>elevation: {tile.elevation}</div>
-      <div>occupant: {tile.occupant}</div>
+      <div>occupant: {JSON.stringify(tile.occupant)}</div>
       <div>openable: {tile.openable? 'true': 'false'}</div>
       <div>type: {tile.type}</div>
-      {/* <div>pos: ({tile.x}, {tile.y})</div> */}
+      <div>pos: ({tile.x}, {tile.y})</div>
     </>}
     {!tile && <>
       <div>no selection</div>
@@ -120,11 +120,36 @@ function Game({ setScreen, screenName, gameId, missionId, map }: { setScreen: (s
   const [x, setX] = React.useState(0);
   const [y, setY] = React.useState(0);
   const [zoom, setZoom] = React.useState(1);
-  const [rotate, setRotate] = React.useState(45);
+  const [rotate, setRotate] = React.useState(0);
   const tileDimensionInt = 32 + zoom * 16;
   const tileDimension = `${tileDimensionInt}px`;
   const zoomOutEnabled = zoom > -1, zoomInEnabled = zoom < 3;
-  const [activeTile, setActiveTile] = React.useState<Tile | null>(null);
+  const [hoverTile, setHoverTile] = React.useState<Tile | null>(null);
+  const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
+  const [moveDestination, setMoveDestination] = useState<Tile | null>(null);
+  const [attackTarget, setAttackTarget] = useState<Tile | null>(null);
+  const canSelectTile = (tile: Tile | null) => {
+    if(tile === null) return true;
+    return !!tile.occupant;
+  }
+  const canMoveToTile = (tile: Tile | null) => {
+    if(tile === null) return false;
+    if(selectedTile === null) return false;
+    if(tile.occupant) return false;
+    const maxMovement = 5;
+    const distance = Math.ceil(Math.sqrt(Math.pow(tile.x - selectedTile.x, 2) + Math.pow(tile.y - selectedTile.y, 2)));
+    if(distance <= maxMovement) return true;
+    return false;
+  }
+  const canAttackTarget = (tile: Tile | null) => {
+    if(tile === null) return false;
+    if(selectedTile === null) return false;
+    // todo: obstacles, throw distance, etc
+    const maxMovement = 10;
+    const distance = Math.sqrt(Math.pow(tile.x - selectedTile.x, 2) + Math.pow(tile.y - selectedTile.y, 2));
+    if(distance <= maxMovement) return true;
+    return false;
+  }
   if(map.length === 0) return null;
   return <>
     <Viewport 
@@ -143,12 +168,7 @@ function Game({ setScreen, screenName, gameId, missionId, map }: { setScreen: (s
         const [mouseX, mouseY] = [e.clientX, e.clientY];
         const [transformX, transformY] = [mouseX - x, mouseY - y];
         const [cellX, cellY] = [Math.floor(transformX / tileDimensionInt), Math.floor(transformY / tileDimensionInt)];
-        const [originX, originY] = [0,0];
-        const [worldY, worldX] = [(cellY - originY) + (cellX - originX), (cellY - originY) - (cellX + originX)];
-        console.log(cellX, cellY);
-        // 594,513
-
-        // setActiveTile(map[Math.floor(gridY)][Math.floor(gridX)])
+        setHoverTile(map[Math.floor(cellY)][Math.floor(cellX)])
       }}>
       <div style={{
         display:'grid',
@@ -160,7 +180,7 @@ function Game({ setScreen, screenName, gameId, missionId, map }: { setScreen: (s
       }}>
         {map.map((row, rowIndex) =>
           row.map((cell, cellIndex) => 
-            cell['textures'].map((texture, textureIndex) => 
+            cell['textures'].map((texture, textureIndex): ReactElement | null => 
               <img 
                 className="tile"
                 src={`thethirdsequence/${texture.graphic}512.jpg`} 
@@ -171,18 +191,63 @@ function Game({ setScreen, screenName, gameId, missionId, map }: { setScreen: (s
                     width: tileDimension,
                     height: tileDimension,
                   };
-                  // if(cell == activeTile) {
-                  //   css['border'] = "1px solid red";
-                  // }
                   return css;
                 })()}
               />
-            )
+            ).concat(cell.occupant? 
+              <img
+                src="marker.png" 
+                className='tile'
+                style={{
+                  gridColumn: `${cellIndex + 1}`,
+                  gridRow: `${rowIndex + 1}`,
+                  width: tileDimension,
+                  height: tileDimension,
+                }}
+              /> : null,
+              cell === hoverTile? (<div
+                className="focus_box focus_box_red"
+                onClick={() => canSelectTile(cell) && setSelectedTile(cell)}
+                style={{
+                  gridColumn: `${cellIndex + 1}`,
+                  gridRow: `${rowIndex + 1}`,
+                  width: tileDimension,
+                  height: tileDimension,
+                }} />): null,
+              cell === selectedTile? (<div
+                className="focus_box focus_box_blue"
+                onClick={() => setSelectedTile(null)}
+                style={{
+                  gridColumn: `${cellIndex + 1}`,
+                  gridRow: `${rowIndex + 1}`,
+                  width: tileDimension,
+                  height: tileDimension,
+                }} />): null,
+              selectedTile && cell === hoverTile && canAttackTarget(cell)? (<div
+                className="focus_box focus_box_attack"
+                onClick={() => setSelectedTile(null)}
+                style={{
+                  gridColumn: `${cellIndex + 1}`,
+                  gridRow: `${rowIndex + 1}`,
+                  width: tileDimension,
+                  height: tileDimension,
+                }} />): null,
+              selectedTile && cell === hoverTile && canMoveToTile(cell)? (<div
+                className="focus_box focus_box_green"
+                onClick={() => setSelectedTile(null)}
+                style={{
+                  gridColumn: `${cellIndex + 1}`,
+                  gridRow: `${rowIndex + 1}`,
+                  width: tileDimension,
+                  height: tileDimension,
+                }} />): null
+  
+            ).filter(v => v)
           )
         )}
       </div>
     </Viewport>
-    <TileInspector tile={activeTile} />
+    <TileInspector tile={hoverTile} />
   </>;
 }
 
