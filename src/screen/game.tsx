@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from "react";
 import { Tile } from "../models/models";
-import { TileInspector } from "./tile-inspector";
-import { Viewport } from "./viewport";
+import { TileInspector } from "../components/tile-inspector";
+import { Viewport } from "../components/viewport";
 
 export function Game({ setScreen, screenName, gameId, missionId, map }: { setScreen: (screen: string) => void, screenName: string, gameId: string, missionId: string, map: Tile[][] }) {
   const [x, setX] = React.useState(0);
