@@ -16,7 +16,23 @@ function isPlayer(occupant: Character | null): boolean {
   console.log(occupant?.faction)
   return occupant?.faction === 0;
 }
-export function Game({ setScreen, screenName, gameId, missionId, map, characters }: { setScreen: (screen: string) => void, screenName: string, gameId: string, missionId: string, map: Tile[][], characters: Record<Uuid, Character> }) {
+export function Game({ 
+  setScreen, 
+  screenName, 
+  gameId, 
+  missionId, 
+  map, 
+  characters,
+  language
+}: {
+  setScreen: (screen: string) => void, 
+  screenName: string, 
+  gameId: string, 
+  missionId: string, 
+  map: Tile[][], 
+  characters: Record<Uuid, Character>,
+  language: string
+}) {
   const [x, setX] = React.useState(0);
   const [y, setY] = React.useState(0);
   const [zoom, setZoom] = React.useState(1);
@@ -153,6 +169,10 @@ export function Game({ setScreen, screenName, gameId, missionId, map, characters
         )}
       </div>
     </Viewport>
-    <TileInspector tile={hoverTile} occupant={occupant(hoverTile?.occupant)} />
+    <TileInspector
+      language={language} 
+      tile={hoverTile} 
+      occupant={occupant(hoverTile?.occupant)} 
+    />
   </>;
 }

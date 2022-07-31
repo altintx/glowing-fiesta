@@ -9,7 +9,17 @@ import { Game } from './screen/game';
 // this is the router
 class App extends React.Component<
   { socket: Socket | null },
-  { screen: string, gameId: string | null, missionId: string | null, map: Tile[][], screenName: string | null, characters: Record<string, any>, connected: boolean}> {
+  { 
+    screen: string, 
+    gameId: string | null, 
+    missionId: string | null, 
+    map: Tile[][], 
+    screenName: string | null, 
+    characters: Record<string, any>, 
+    connected: boolean, 
+    acceptLanguage: string
+  }
+> {
   constructor(props: { socket: Socket | null }) {
     super(props);
     this.state = {
@@ -19,7 +29,8 @@ class App extends React.Component<
       map: [],
       screenName: null,
       characters: {},
-      connected: false
+      connected: false,
+      acceptLanguage: 'en'
     }
   }
   setScreen(screen: string) {
@@ -47,8 +58,8 @@ class App extends React.Component<
     const socket = this.props.socket;
     if(!socket) return;
     console.log("binding")
-    socket.on("hello", (response) => {
-      this.setState({ connected: true });
+    socket.on("hello", ({language}) => {
+      this.setState({ connected: true, acceptLanguage: language });
     })
     socket.on('you_logged_in', (response) => {
       console.log("you logged in");
@@ -99,18 +110,19 @@ class App extends React.Component<
     this.setState({ screenName: name });
   }
   render() {
-    const { screen, gameId, missionId, map, screenName, characters, connected } = this.state;
+    const { screen, gameId, missionId, map, screenName, characters, connected, acceptLanguage } = this.state;
     if(!connected) return <div>Connecting</div>;
     const socket = this.props.socket as Socket;
     const setScreen = this.setScreen.bind(this);
     switch(screen) {
       case 'mainmenu':
-        return <MainMenu login={(screenName) => {
+        return <MainMenu language={acceptLanguage} login={(screenName) => {
           socket.emit('login', { name: screenName });
           this.setScreenName(screenName);
         }} />
       case "loggedinmenu":
         return <GameMenu 
+          language={acceptLanguage}
           screenName={screenName as string}
           onNewGame={() => socket.emit('new_game')}
           onLogOut={() => {
@@ -123,7 +135,15 @@ class App extends React.Component<
           }}
         />
       case "game":
-        return <Game screenName={screenName as string} gameId={gameId as string} missionId={missionId as string} setScreen={setScreen} map={map} characters={characters} />
+        return <Game 
+          language={acceptLanguage}
+          screenName={screenName as string} 
+          gameId={gameId as string} 
+          missionId={missionId as string} 
+          setScreen={setScreen} 
+          map={map} 
+          characters={characters} 
+        />
       default:
         return <div>Unknown state</div>
     }

@@ -1,5 +1,19 @@
 import React from 'react';
-export default function GameMenu({screenName, onNewGame, onLogOut, onFindGame, onOptions }: { screenName: string, onNewGame: () => void, onLogOut: () => void, onFindGame: () => void, onOptions: () => void }) {
+export default function GameMenu({
+    screenName, 
+    language,
+    onNewGame, 
+    onLogOut, 
+    onFindGame, 
+    onOptions 
+}: { 
+    screenName: string, 
+    language: string,
+    onNewGame: () => void, 
+    onLogOut: () => void, 
+    onFindGame: () => void, 
+    onOptions: () => void 
+}) {
     return <>
         <h1>Game Menu</h1>
         <p>You're logged in as {screenName} </p>
