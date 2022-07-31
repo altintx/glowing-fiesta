@@ -3,6 +3,8 @@ import { Tile } from "../models/models";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
 
+type Actions = 'select' | 'move' | 'rotate' | 'zoom' | 'none' | 'attack';
+
 export function Game({ setScreen, screenName, gameId, missionId, map }: { setScreen: (screen: string) => void, screenName: string, gameId: string, missionId: string, map: Tile[][] }) {
   const [x, setX] = React.useState(0);
   const [y, setY] = React.useState(0);
@@ -15,12 +17,13 @@ export function Game({ setScreen, screenName, gameId, missionId, map }: { setScr
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
   const [moveDestination, setMoveDestination] = useState<Tile | null>(null);
   const [attackTarget, setAttackTarget] = useState<Tile | null>(null);
+  const [action, setAction] = useState<Actions>("select");
   const canSelectTile = (tile: Tile | null) => {
-    if(tile === null) return true;
+    if(!tile) return true;
     return !!tile.occupant;
   }
   const canMoveToTile = (tile: Tile | null) => {
-    if(tile === null) return false;
+    if(!tile) return false;
     if(selectedTile === null) return false;
     if(tile.occupant) return false;
     const maxMovement = 5;
@@ -29,7 +32,7 @@ export function Game({ setScreen, screenName, gameId, missionId, map }: { setScr
     return false;
   }
   const canAttackTarget = (tile: Tile | null) => {
-    if(tile === null) return false;
+    if(!tile) return false;
     if(selectedTile === null) return false;
     // todo: obstacles, throw distance, etc
     const maxMovement = 10;
@@ -37,6 +40,9 @@ export function Game({ setScreen, screenName, gameId, missionId, map }: { setScr
     if(distance <= maxMovement) return true;
     return false;
   }
+  const canSelect = canSelectTile(hoverTile);
+  const canAttack = selectedTile && canAttackTarget(hoverTile);
+  const canMove = selectedTile && canMoveToTile(hoverTile);
   if(map.length === 0) return null;
   return <>
     <Viewport 
@@ -92,9 +98,10 @@ export function Game({ setScreen, screenName, gameId, missionId, map }: { setScr
                   height: tileDimension,
                 }}
               /> : null,
-              cell === hoverTile? (<div
+              canSelect && cell === hoverTile? (<div
                 className="focus_box focus_box_red"
-                onClick={() => canSelectTile(cell) && setSelectedTile(cell)}
+                onClick={() => setSelectedTile(cell)}
+                // this ought to prompt for an action
                 style={{
                   gridColumn: `${cellIndex + 1}`,
                   gridRow: `${rowIndex + 1}`,
@@ -110,7 +117,7 @@ export function Game({ setScreen, screenName, gameId, missionId, map }: { setScr
                   width: tileDimension,
                   height: tileDimension,
                 }} />): null,
-              selectedTile && cell === hoverTile && canAttackTarget(cell)? (<div
+              (canAttack && cell === hoverTile)? (<div
                 className="focus_box focus_box_attack"
                 onClick={() => setSelectedTile(null)}
                 style={{
@@ -119,7 +126,7 @@ export function Game({ setScreen, screenName, gameId, missionId, map }: { setScr
                   width: tileDimension,
                   height: tileDimension,
                 }} />): null,
-              selectedTile && cell === hoverTile && canMoveToTile(cell)? (<div
+              (canMove && cell === hoverTile)? (<div
                 className="focus_box focus_box_green"
                 onClick={() => setSelectedTile(null)}
                 style={{

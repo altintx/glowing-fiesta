@@ -3,7 +3,7 @@ import MainMenu from './screen/main-menu';
 import { Socket } from 'socket.io-client'
 import GameMenu from './screen/game-menu';
 import { Tile } from './models/models';
-import { Game } from './components/game';
+import { Game } from './screen/game';
 
 
 // this is the router

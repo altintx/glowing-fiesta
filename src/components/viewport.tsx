@@ -46,16 +46,13 @@ export function Viewport({
       width: '100%',
       height: '100%',
       position:'absolute'}}>{children}</div>
-    <div style={{position:"absolute",zIndex:1000}}>
+    <div style={{position:"absolute",zIndex:1000,bottom:0,width:'100%'}}>
+      <div style={{margin:'0 auto',width:'500px'}}>
       <button onClick={onGameMenu}>Menu</button>
       <button onClick={() => {
         setRotate((rotate + 270) % 360);
         // setY(y - 32);
       }}>Rotate Left</button>
-      <button onClick={() => {
-        setX(x - 32);
-        // setY(y - 32);
-      }}>Right</button>
       <button onClick={() => {
         setX(x + 32);
         // setY(y - 32);
@@ -75,10 +72,14 @@ export function Viewport({
         setZoom(zoom -1);
       }}>Z Out</button>
       <button onClick={() => {
+        setX(x - 32);
+        // setY(y - 32);
+      }}>Right</button>
+      <button onClick={() => {
         setRotate((rotate + 90) % 360);
         // setY(y - 32);
       }}>Rotate Right</button>
     </div>
+    </div>
   </div>;
 }
-  
