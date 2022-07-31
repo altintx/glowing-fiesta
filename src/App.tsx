@@ -9,7 +9,7 @@ import { Game } from './screen/game';
 // this is the router
 class App extends React.Component<
   { socket: Socket | null },
-  { screen: string, gameId: string | null, missionId: string | null, map: Tile[][], screenName: string | null, characters: Record<string, any>}> {
+  { screen: string, gameId: string | null, missionId: string | null, map: Tile[][], screenName: string | null, characters: Record<string, any>, connected: boolean}> {
   constructor(props: { socket: Socket | null }) {
     super(props);
     this.state = {
@@ -19,6 +19,7 @@ class App extends React.Component<
       map: [],
       screenName: null,
       characters: {},
+      connected: false
     }
   }
   setScreen(screen: string) {
@@ -46,6 +47,9 @@ class App extends React.Component<
     const socket = this.props.socket;
     if(!socket) return;
     console.log("binding")
+    socket.on("hello", (response) => {
+      this.setState({ connected: true });
+    })
     socket.on('you_logged_in', (response) => {
       console.log("you logged in");
       // todo: response really ought to include the assigned screen name
@@ -89,12 +93,14 @@ class App extends React.Component<
       console.log(response);
       this.setCharacters(response);
     });
+    socket.emit("hello");
   }
   setScreenName(name: string | null) {
     this.setState({ screenName: name });
   }
   render() {
-    const { screen, gameId, missionId, map, screenName, characters } = this.state;
+    const { screen, gameId, missionId, map, screenName, characters, connected } = this.state;
+    if(!connected) return <div>Connecting</div>;
     const socket = this.props.socket as Socket;
     const setScreen = this.setScreen.bind(this);
     switch(screen) {
