@@ -9,7 +9,7 @@ import { Game } from './screen/game';
 // this is the router
 class App extends React.Component<
   { socket: Socket | null },
-  { screen: string, gameId: string | null, missionId: string | null, map: Tile[][], screenName: string | null }> {
+  { screen: string, gameId: string | null, missionId: string | null, map: Tile[][], screenName: string | null, characters: Record<string, any>}> {
   constructor(props: { socket: Socket | null }) {
     super(props);
     this.state = {
@@ -17,7 +17,8 @@ class App extends React.Component<
       gameId: null,
       missionId: null,
       map: [],
-      screenName: null
+      screenName: null,
+      characters: {},
     }
   }
   setScreen(screen: string) {
@@ -31,6 +32,12 @@ class App extends React.Component<
   }
   setMap(map: Tile[][]) {
     this.setState({ map });
+  }
+  setCharacters(characters: any[]) {
+    this.setState({ characters: characters.reduce((s, c) => {
+      s[c.uuid] = c;
+      return s;
+    }, {})});
   }
   componentWillUnmount() {
     this.props.socket?.removeAllListeners();
@@ -76,13 +83,18 @@ class App extends React.Component<
         }
       }
       this.setMap(_map);
-    })
+    });
+    socket.on("characters_info", (response) => {
+      console.log("characters_info info");
+      console.log(response);
+      this.setCharacters(response);
+    });
   }
   setScreenName(name: string | null) {
     this.setState({ screenName: name });
   }
   render() {
-    const { screen, gameId, missionId, map, screenName } = this.state;
+    const { screen, gameId, missionId, map, screenName, characters } = this.state;
     const socket = this.props.socket as Socket;
     const setScreen = this.setScreen.bind(this);
     switch(screen) {
@@ -105,7 +117,7 @@ class App extends React.Component<
           }}
         />
       case "game":
-        return <Game screenName={screenName as string} gameId={gameId as string} missionId={missionId as string} setScreen={setScreen} map={map} />
+        return <Game screenName={screenName as string} gameId={gameId as string} missionId={missionId as string} setScreen={setScreen} map={map} characters={characters} />
       default:
         return <div>Unknown state</div>
     }

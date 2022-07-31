@@ -4,8 +4,19 @@ import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
 
 type Actions = 'select' | 'move' | 'rotate' | 'zoom' | 'none' | 'attack';
-
-export function Game({ setScreen, screenName, gameId, missionId, map }: { setScreen: (screen: string) => void, screenName: string, gameId: string, missionId: string, map: Tile[][] }) {
+type Character = {
+  name: string;
+  uuid: string;
+  class: any;
+  race: any;
+  faction: any;
+}
+type Uuid = string;
+function isPlayer(occupant: Character | null): boolean {
+  console.log(occupant?.faction)
+  return occupant?.faction === 0;
+}
+export function Game({ setScreen, screenName, gameId, missionId, map, characters }: { setScreen: (screen: string) => void, screenName: string, gameId: string, missionId: string, map: Tile[][], characters: Record<Uuid, Character> }) {
   const [x, setX] = React.useState(0);
   const [y, setY] = React.useState(0);
   const [zoom, setZoom] = React.useState(1);
@@ -20,8 +31,9 @@ export function Game({ setScreen, screenName, gameId, missionId, map }: { setScr
   const [action, setAction] = useState<Actions>("select");
   const canSelectTile = (tile: Tile | null) => {
     if(!tile) return true;
-    return !!tile.occupant;
+    return !!tile.occupant && isPlayer(occupant(tile.occupant));
   }
+  const occupant = (id: Uuid): Character | null => id in characters? characters[id] : null;
   const canMoveToTile = (tile: Tile | null) => {
     if(!tile) return false;
     if(selectedTile === null) return false;
@@ -73,7 +85,7 @@ export function Game({ setScreen, screenName, gameId, missionId, map }: { setScr
       }}>
         {map.map((row, rowIndex) =>
           row.map((cell, cellIndex) => 
-            cell['textures'].map((texture, textureIndex): ReactElement | null => 
+            cell['textures'].map((texture): ReactElement | null => 
               <img 
                 className="tile"
                 src={`thethirdsequence/${texture.graphic}512.jpg`} 
@@ -141,6 +153,6 @@ export function Game({ setScreen, screenName, gameId, missionId, map }: { setScr
         )}
       </div>
     </Viewport>
-    <TileInspector tile={hoverTile} />
+    <TileInspector tile={hoverTile} occupant={occupant(hoverTile?.occupant)} />
   </>;
 }
