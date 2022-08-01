@@ -100,8 +100,6 @@ class App extends React.Component<
       this.setMap(_map);
     });
     socket.on("characters_info", (response) => {
-      console.log("characters_info info");
-      console.log(response);
       this.setCharacters(response);
     });
     socket.emit("hello");

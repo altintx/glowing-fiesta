@@ -46,8 +46,7 @@ export function Viewport({
       width: '100%',
       height: '100%',
       position:'absolute'}}>{children}</div>
-    <div style={{position:"absolute",zIndex:1000,bottom:0,width:'100%'}}>
-      <div style={{margin:'0 auto',width:'500px'}}>
+    <div style={{position:"absolute",bottom:0,right:0,zIndex:1000}}>
       <button onClick={onGameMenu}>Menu</button>
       <button onClick={() => {
         setRotate((rotate + 270) % 360);
@@ -79,7 +78,6 @@ export function Viewport({
         setRotate((rotate + 90) % 360);
         // setY(y - 32);
       }}>Rotate Right</button>
-    </div>
     </div>
   </div>;
 }

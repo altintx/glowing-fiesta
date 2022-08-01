@@ -3,7 +3,7 @@ import { Tile } from "../models/models";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
 
-type Actions = 'select' | 'move' | 'rotate' | 'zoom' | 'none' | 'attack';
+type Actions = 'select' | 'move' | 'attack' | 'fortify' | 'wait' | 'end_turn' | 'grenade';
 type Character = {
   name: string;
   uuid: string;
@@ -13,7 +13,6 @@ type Character = {
 }
 type Uuid = string;
 function isPlayer(occupant: Character | null): boolean {
-  console.log(occupant?.faction)
   return occupant?.faction === 0;
 }
 export function Game({ 
@@ -62,15 +61,33 @@ export function Game({
   const canAttackTarget = (tile: Tile | null) => {
     if(!tile) return false;
     if(selectedTile === null) return false;
-    // todo: obstacles, throw distance, etc
-    const maxMovement = 10;
-    const distance = Math.sqrt(Math.pow(tile.x - selectedTile.x, 2) + Math.pow(tile.y - selectedTile.y, 2));
-    if(distance <= maxMovement) return true;
-    return false;
+    if(action === 'attack') {
+      // todo: obstacles, throw distance, etc
+      const maxMovement = 10;
+      const distance = Math.sqrt(Math.pow(tile.x - selectedTile.x, 2) + Math.pow(tile.y - selectedTile.y, 2));
+      if(distance <= maxMovement && tile.occupant) return true;
+    } else if (action === 'grenade') {
+      // todo: obstacles, throw distance, etc
+      const maxMovement = 7;
+      const distance = Math.sqrt(Math.pow(tile.x - selectedTile.x, 2) + Math.pow(tile.y - selectedTile.y, 2));
+      if(distance <= maxMovement) return true;
+
+    }
+        return false;
   }
+  const ap = 1;
+  const grenadeCount = 1;
   const canSelect = canSelectTile(hoverTile);
-  const canAttack = selectedTile && canAttackTarget(hoverTile);
-  const canMove = selectedTile && canMoveToTile(hoverTile);
+  const canAttack = !!selectedTile && ap > 0;
+  const canMove = selectedTile && ap > 0;
+  const canFortify = false; // need cover
+  const canEndTurn = ap > 0;
+  const canGrenade = ap > 0 && grenadeCount > 0;
+  const canWait = false;
+  const isAttacking = action === "attack" || action === "grenade";
+  const isMoving = action === "move";
+  const isFortifying = action === "fortify";
+
   if(map.length === 0) return null;
   return <>
     <Viewport 
@@ -100,8 +117,9 @@ export function Game({
         height: `${map.length * (tileDimensionInt)}px`,
       }}>
         {map.map((row, rowIndex) =>
-          row.map((cell, cellIndex) => 
-            cell['textures'].map((texture): ReactElement | null => 
+          row.map((cell, cellIndex) => {
+            const hovered = cell === hoverTile;
+            return cell['textures'].map((texture): ReactElement | null => 
               <img 
                 className="tile"
                 src={`thethirdsequence/${texture.graphic}512.jpg`} 
@@ -145,28 +163,58 @@ export function Game({
                   width: tileDimension,
                   height: tileDimension,
                 }} />): null,
-              (canAttack && cell === hoverTile)? (<div
-                className="focus_box focus_box_attack"
+              (isAttacking && canAttackTarget(cell))? ([<div
                 onClick={() => setSelectedTile(null)}
                 style={{
                   gridColumn: `${cellIndex + 1}`,
                   gridRow: `${rowIndex + 1}`,
                   width: tileDimension,
                   height: tileDimension,
-                }} />): null,
-              (canMove && cell === hoverTile)? (<div
-                className="focus_box focus_box_green"
+                  backgroundColor: "#ff0000",
+                  opacity: 0.1
+                }} />].concat(hovered? [<div
+                  className={`focus_box ${hovered && 'focus_box_attack' }`}
+                  onClick={() => setSelectedTile(null)}
+                  style={{
+                    gridColumn: `${cellIndex + 1}`,
+                    gridRow: `${rowIndex + 1}`,
+                    width: tileDimension,
+                    height: tileDimension,
+                  }} />]: [])): null,
+              (isMoving && canMoveToTile(cell))? ([<div
                 onClick={() => setSelectedTile(null)}
                 style={{
+                  backgroundColor: '#00ff00',
+                  opacity: 0.1,
                   gridColumn: `${cellIndex + 1}`,
                   gridRow: `${rowIndex + 1}`,
                   width: tileDimension,
                   height: tileDimension,
-                }} />): null
-  
+                }} />].concat(hovered? [<div
+                  className={`focus_box ${hovered && 'focus_box_green' }`}
+                  onClick={() => setSelectedTile(null)}
+                  style={{
+                    gridColumn: `${cellIndex + 1}`,
+                    gridRow: `${rowIndex + 1}`,
+                    width: tileDimension,
+                    height: tileDimension,
+                  }} />]: [])): null
             ).filter(v => v)
-          )
+            })
         )}
+      </div>
+      <div style={{
+        bottom: 0,
+        position: 'absolute',
+        width: '100%',
+        zIndex: 1000
+      }}>
+        <button disabled={!canMove} onClick={() => setAction('move')}>Move</button>
+        <button disabled={!canAttack} onClick={() => setAction('attack')}>Targetted Attack</button>
+        <button disabled={!canGrenade} onClick={() => setAction('grenade')}>AOE Attack</button>
+        <button disabled={!canWait} onClick={() => setAction('wait')}>Wait</button>
+        <button disabled={!canEndTurn} onClick={() => setAction('end_turn')}>End Turn</button>
+        <button disabled={!canFortify} onClick={() => setAction('fortify')}>Fortify</button>
       </div>
     </Viewport>
     <TileInspector
