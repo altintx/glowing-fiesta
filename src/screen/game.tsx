@@ -89,6 +89,14 @@ export function Game({
   const isFortifying = action === "fortify";
 
   if(map.length === 0) return null;
+  const actionBar = <>
+    <button disabled={!canMove} onClick={() => setAction('move')}>Move</button>
+    <button disabled={!canAttack} onClick={() => setAction('attack')}>Targetted Attack</button>
+    <button disabled={!canGrenade} onClick={() => setAction('grenade')}>AOE Attack</button>
+    <button disabled={!canWait} onClick={() => setAction('wait')}>Wait</button>
+    <button disabled={!canEndTurn} onClick={() => setAction('end_turn')}>End Turn</button>
+    <button disabled={!canFortify} onClick={() => setAction('fortify')}>Fortify</button>
+  </>;
   return <>
     <Viewport 
       x={x} 
@@ -102,6 +110,7 @@ export function Game({
       rotate={rotate} 
       setRotate={setRotate} 
       onGameMenu={() => setScreen('gamemenu')}
+      actionBar={actionBar}
       onMouseMove={(e) => {
         const [mouseX, mouseY] = [e.clientX, e.clientY];
         const [transformX, transformY] = [mouseX - x, mouseY - y];
@@ -202,19 +211,6 @@ export function Game({
             ).filter(v => v)
             })
         )}
-      </div>
-      <div style={{
-        bottom: 0,
-        position: 'absolute',
-        width: '100%',
-        zIndex: 1000
-      }}>
-        <button disabled={!canMove} onClick={() => setAction('move')}>Move</button>
-        <button disabled={!canAttack} onClick={() => setAction('attack')}>Targetted Attack</button>
-        <button disabled={!canGrenade} onClick={() => setAction('grenade')}>AOE Attack</button>
-        <button disabled={!canWait} onClick={() => setAction('wait')}>Wait</button>
-        <button disabled={!canEndTurn} onClick={() => setAction('end_turn')}>End Turn</button>
-        <button disabled={!canFortify} onClick={() => setAction('fortify')}>Fortify</button>
       </div>
     </Viewport>
     <TileInspector

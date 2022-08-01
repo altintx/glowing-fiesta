@@ -13,7 +13,8 @@ export function Viewport({
   rotate,
   setRotate,
   onGameMenu,
-  onMouseMove
+  onMouseMove,
+  actionBar
 }: {
   children: React.ReactNode, 
   x: number, 
@@ -27,7 +28,8 @@ export function Viewport({
   onMouseMove: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
   zoomOutEnabled: boolean, 
   zoomInEnabled: boolean,
-  onGameMenu: () => void
+  onGameMenu: () => void,
+  actionBar?: React.ReactNode
 }) {
   return <div
     style={{ 
@@ -46,6 +48,14 @@ export function Viewport({
       width: '100%',
       height: '100%',
       position:'absolute'}}>{children}</div>
+    {actionBar && <div style={{
+        bottom: 0,
+        position: 'absolute',
+        width: '100%',
+        zIndex: 1000
+      }}>
+        {actionBar}
+      </div>}
     <div style={{position:"absolute",bottom:0,right:0,zIndex:1000}}>
       <button onClick={onGameMenu}>Menu</button>
       <button onClick={() => {
