@@ -14,7 +14,9 @@ export function Viewport({
   setRotate,
   onGameMenu,
   onMouseMove,
-  actionBar
+  actionBar,
+  boardRef,
+  inspector,
 }: {
   children: React.ReactNode, 
   x: number, 
@@ -29,7 +31,9 @@ export function Viewport({
   zoomOutEnabled: boolean, 
   zoomInEnabled: boolean,
   onGameMenu: () => void,
-  actionBar?: React.ReactNode
+  actionBar?: React.ReactNode,
+  boardRef: React.Ref<HTMLDivElement>,
+  inspector?: React.ReactNode
 }) {
   return <div
     style={{ 
@@ -37,57 +41,37 @@ export function Viewport({
       height: '100%', 
       overflow: 'hidden', 
       position: 'relative' 
-    }}
-    onMouseMove={onMouseMove}>
-    <div style={{
-      zIndex: 1,
-      rotate:`${rotate}deg`,
-      transformOrigin: 'center',
-      left:`${x}px`, 
-      top: `${y}px`,
-      width: '100%',
-      height: '100%',
-      position:'absolute'}}>{children}</div>
+    }}>
+    <div
+      ref={boardRef}
+      onMouseMove={onMouseMove}
+      style={{
+        zIndex: 1,
+        transform:`rotate(${rotate}deg)`,
+        transformOrigin: 'top left',
+        left:`${x}px`, 
+        top: `${y}px`,
+        width: '100%',
+        height: '100%',
+        position:'absolute'
+    }}>{children}</div>
     {actionBar && <div style={{
         bottom: 0,
         position: 'absolute',
         width: '100%',
         zIndex: 1000
-      }}>
-        {actionBar}
-      </div>}
+      }}>{actionBar}</div>}
+    {inspector}
     <div style={{position:"absolute",bottom:0,right:0,zIndex:1000}}>
       <button onClick={onGameMenu}>Menu</button>
-      <button onClick={() => {
-        setRotate((rotate + 270) % 360);
-        // setY(y - 32);
-      }}>Rotate Left</button>
-      <button onClick={() => {
-        setX(x + 32);
-        // setY(y - 32);
-      }}>Left</button>
-      <button onClick={() => {
-        // setX(x - 32);
-        setY(y + 32);
-      }}>Up</button>
-      <button onClick={() => {
-        // setX(x + 32);
-        setY(y - 32);
-      }}>Down</button>
-      <button disabled={!zoomInEnabled} onClick={() => {
-        setZoom(zoom + 1);
-      }}>Z In</button>
-      <button disabled={!zoomOutEnabled} onClick={() => {
-        setZoom(zoom -1);
-      }}>Z Out</button>
-      <button onClick={() => {
-        setX(x - 32);
-        // setY(y - 32);
-      }}>Right</button>
-      <button onClick={() => {
-        setRotate((rotate + 90) % 360);
-        // setY(y - 32);
-      }}>Rotate Right</button>
+      <button onClick={() => setRotate((rotate + 270) % 360)}>Rotate Left</button>
+      <button onClick={() => setX(x + 32)}>Left</button>
+      <button onClick={() => setY(y + 32)}>Up</button>
+      <button onClick={() => setY(y - 32)}>Down</button>
+      <button disabled={!zoomInEnabled} onClick={() => setZoom(zoom + 1)}>Z In</button>
+      <button disabled={!zoomOutEnabled} onClick={() => setZoom(zoom -1)}>Z Out</button>
+      <button onClick={() => setX(x - 32)}>Right</button>
+      <button onClick={() => setRotate((rotate + 90) % 360)}>Rotate Right</button>
     </div>
   </div>;
 }

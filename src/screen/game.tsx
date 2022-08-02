@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useRef, useState } from "react";
 import { Tile } from "../models/models";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
@@ -35,8 +35,8 @@ export function Game({
   const [x, setX] = React.useState(0);
   const [y, setY] = React.useState(0);
   const [zoom, setZoom] = React.useState(1);
-  const [rotate, setRotate] = React.useState(0);
-  const tileDimensionInt = 32 + zoom * 16;
+  const [rotate, setRotate] = React.useState(45);
+  const tileDimensionInt = 64 + zoom * 32;
   const tileDimension = `${tileDimensionInt}px`;
   const zoomOutEnabled = zoom > -1, zoomInEnabled = zoom < 3;
   const [hoverTile, setHoverTile] = React.useState<Tile | null>(null);
@@ -44,6 +44,7 @@ export function Game({
   const [moveDestination, setMoveDestination] = useState<Tile | null>(null);
   const [attackTarget, setAttackTarget] = useState<Tile | null>(null);
   const [action, setAction] = useState<Actions>("select");
+  const boardRef = useRef(null);
   const canSelectTile = (tile: Tile | null) => {
     if(!tile) return true;
     return !!tile.occupant && isPlayer(occupant(tile.occupant));
@@ -97,126 +98,131 @@ export function Game({
     <button disabled={!canEndTurn} onClick={() => setAction('end_turn')}>End Turn</button>
     <button disabled={!canFortify} onClick={() => setAction('fortify')}>Fortify</button>
   </>;
-  return <>
-    <Viewport 
-      x={x} 
-      y={y} 
-      zoom={zoom} 
-      setX={setX} 
-      setY={setY} 
-      setZoom={setZoom} 
-      zoomOutEnabled={zoomOutEnabled} 
-      zoomInEnabled={zoomInEnabled} 
-      rotate={rotate} 
-      setRotate={setRotate} 
-      onGameMenu={() => setScreen('gamemenu')}
-      actionBar={actionBar}
-      onMouseMove={(e) => {
-        const [mouseX, mouseY] = [e.clientX, e.clientY];
-        const [transformX, transformY] = [mouseX - x, mouseY - y];
-        const [cellX, cellY] = [Math.floor(transformX / tileDimensionInt), Math.floor(transformY / tileDimensionInt)];
-        setHoverTile(map[Math.floor(cellY)][Math.floor(cellX)])
-      }}>
-      <div style={{
-        display:'grid',
-        gridAutoColumns: `1fr`,
-        gridAutoRows: `1fr`,
-        gap: 0,
-        width: `${map[0].length * (tileDimensionInt)}px`,
-        height: `${map.length * (tileDimensionInt)}px`,
-      }}>
-        {map.map((row, rowIndex) =>
-          row.map((cell, cellIndex) => {
-            const hovered = cell === hoverTile;
-            return cell['textures'].map((texture): ReactElement | null => 
-              <img 
-                className="tile"
-                src={`thethirdsequence/${texture.graphic}512.jpg`} 
-                style={(() => {
-                  const css = {
-                    gridColumn: `${cellIndex + 1}`,
-                    gridRow: `${rowIndex + 1}`,
-                    width: tileDimension,
-                    height: tileDimension,
-                  };
-                  return css;
-                })()}
-              />
-            ).concat(cell.occupant? 
-              <img
-                src="marker.png" 
-                className='tile'
-                style={{
+  const inspector = <TileInspector
+    language={language} 
+    tile={hoverTile} 
+    occupant={occupant(hoverTile?.occupant)} 
+  />;
+  return <Viewport 
+    x={x} 
+    y={y} 
+    zoom={zoom} 
+    setX={setX} 
+    setY={setY} 
+    setZoom={setZoom} 
+    zoomOutEnabled={zoomOutEnabled} 
+    zoomInEnabled={zoomInEnabled} 
+    rotate={rotate} 
+    setRotate={setRotate} 
+    onGameMenu={() => setScreen('gamemenu')}
+    actionBar={actionBar}
+    boardRef={boardRef}
+    inspector={inspector}
+    onMouseMove={(e) => {
+      if(!boardRef.current) return;
+      const [mouseX, mouseY] = [e.clientX, e.clientY];
+      const [transformX, transformY] = [mouseX - x, mouseY - y];
+      let point = new DOMPoint(transformX,transformY);
+      const matrix = new DOMMatrix(window.getComputedStyle(boardRef.current).transform);
+      matrix.invertSelf();
+      point = matrix.transformPoint(point);
+      setHoverTile(map[Math.floor(point.y / tileDimensionInt)][Math.floor(point.x / tileDimensionInt)]);
+    }}>
+    <div style={{
+      display:'grid',
+      gridAutoColumns: `1fr`,
+      gridAutoRows: `1fr`,
+      gap: 0,
+      width: `${map[0].length * (tileDimensionInt)}px`,
+      height: `${map.length * (tileDimensionInt)}px`,
+    }}>
+      {map.map((row, rowIndex) =>
+        row.map((cell, cellIndex) => {
+          const hovered = cell === hoverTile;
+          return cell['textures'].map((texture): ReactElement | null => 
+            <img 
+              className="tile"
+              src={`thethirdsequence/${texture.graphic}512.jpg`} 
+              style={(() => {
+                const css = {
                   gridColumn: `${cellIndex + 1}`,
                   gridRow: `${rowIndex + 1}`,
                   width: tileDimension,
                   height: tileDimension,
-                }}
-              /> : null,
-              canSelect && cell === hoverTile? (<div
-                className="focus_box focus_box_red"
-                onClick={() => setSelectedTile(cell)}
-                // this ought to prompt for an action
-                style={{
-                  gridColumn: `${cellIndex + 1}`,
-                  gridRow: `${rowIndex + 1}`,
-                  width: tileDimension,
-                  height: tileDimension,
-                }} />): null,
-              cell === selectedTile? (<div
-                className="focus_box focus_box_blue"
+                };
+                return css;
+              })()}
+            />
+          ).concat(cell.occupant? 
+            <img
+              src="marker.png" 
+              className='tile'
+              style={{
+                gridColumn: `${cellIndex + 1}`,
+                gridRow: `${rowIndex + 1}`,
+                width: tileDimension,
+                height: tileDimension,
+                rotate: `-${rotate}deg`
+              }}
+            /> : null,
+            canSelect && cell === hoverTile? (<div
+              className="focus_box focus_box_red"
+              onClick={() => setSelectedTile(cell)}
+              // this ought to prompt for an action
+              style={{
+                gridColumn: `${cellIndex + 1}`,
+                gridRow: `${rowIndex + 1}`,
+                width: tileDimension,
+                height: tileDimension,
+              }} />): null,
+            cell === selectedTile? (<div
+              className="focus_box focus_box_blue"
+              onClick={() => setSelectedTile(null)}
+              style={{
+                gridColumn: `${cellIndex + 1}`,
+                gridRow: `${rowIndex + 1}`,
+                width: tileDimension,
+                height: tileDimension,
+              }} />): null,
+            (isAttacking && canAttackTarget(cell))? ([<div
+              onClick={() => setSelectedTile(null)}
+              style={{
+                gridColumn: `${cellIndex + 1}`,
+                gridRow: `${rowIndex + 1}`,
+                width: tileDimension,
+                height: tileDimension,
+                backgroundColor: "#ff0000",
+                opacity: 0.1
+              }} />].concat(hovered? [<div
+                className={`focus_box ${hovered && 'focus_box_attack' }`}
                 onClick={() => setSelectedTile(null)}
                 style={{
                   gridColumn: `${cellIndex + 1}`,
                   gridRow: `${rowIndex + 1}`,
                   width: tileDimension,
                   height: tileDimension,
-                }} />): null,
-              (isAttacking && canAttackTarget(cell))? ([<div
+                }} />]: [])): null,
+            (isMoving && canMoveToTile(cell))? ([<div
+              onClick={() => setSelectedTile(null)}
+              style={{
+                backgroundColor: '#00ff00',
+                opacity: 0.1,
+                gridColumn: `${cellIndex + 1}`,
+                gridRow: `${rowIndex + 1}`,
+                width: tileDimension,
+                height: tileDimension,
+              }} />].concat(hovered? [<div
+                className={`focus_box ${hovered && 'focus_box_green' }`}
                 onClick={() => setSelectedTile(null)}
                 style={{
                   gridColumn: `${cellIndex + 1}`,
                   gridRow: `${rowIndex + 1}`,
                   width: tileDimension,
                   height: tileDimension,
-                  backgroundColor: "#ff0000",
-                  opacity: 0.1
-                }} />].concat(hovered? [<div
-                  className={`focus_box ${hovered && 'focus_box_attack' }`}
-                  onClick={() => setSelectedTile(null)}
-                  style={{
-                    gridColumn: `${cellIndex + 1}`,
-                    gridRow: `${rowIndex + 1}`,
-                    width: tileDimension,
-                    height: tileDimension,
-                  }} />]: [])): null,
-              (isMoving && canMoveToTile(cell))? ([<div
-                onClick={() => setSelectedTile(null)}
-                style={{
-                  backgroundColor: '#00ff00',
-                  opacity: 0.1,
-                  gridColumn: `${cellIndex + 1}`,
-                  gridRow: `${rowIndex + 1}`,
-                  width: tileDimension,
-                  height: tileDimension,
-                }} />].concat(hovered? [<div
-                  className={`focus_box ${hovered && 'focus_box_green' }`}
-                  onClick={() => setSelectedTile(null)}
-                  style={{
-                    gridColumn: `${cellIndex + 1}`,
-                    gridRow: `${rowIndex + 1}`,
-                    width: tileDimension,
-                    height: tileDimension,
-                  }} />]: [])): null
-            ).filter(v => v)
-            })
-        )}
-      </div>
-    </Viewport>
-    <TileInspector
-      language={language} 
-      tile={hoverTile} 
-      occupant={occupant(hoverTile?.occupant)} 
-    />
-  </>;
+                }} />]: [])): null
+          ).filter(v => v)
+          })
+      )}
+    </div>
+  </Viewport>;
 }
