@@ -44,7 +44,7 @@ export function Game({
   const [moveDestination, setMoveDestination] = useState<Tile | null>(null);
   const [attackTarget, setAttackTarget] = useState<Tile | null>(null);
   const [action, setAction] = useState<Actions>("select");
-  const boardRef = useRef(null);
+  const boardRef = useRef<HTMLDivElement>(null);
   const canSelectTile = (tile: Tile | null) => {
     if(!tile) return true;
     return !!tile.occupant && isPlayer(occupant(tile.occupant));
@@ -74,7 +74,15 @@ export function Game({
       if(distance <= maxMovement) return true;
 
     }
-        return false;
+    return false;
+  }
+  const rotator = (angle: number): void => {
+    if(!(boardRef && boardRef.current)) return;
+    const width = boardRef.current.clientWidth;
+    const height = boardRef.current.clientHeight;
+    setX(width / 2);
+    setY(height / 2);
+    setRotate((angle + rotate) % 360);
   }
   const ap = 1;
   const grenadeCount = 1;
@@ -113,7 +121,7 @@ export function Game({
     zoomOutEnabled={zoomOutEnabled} 
     zoomInEnabled={zoomInEnabled} 
     rotate={rotate} 
-    setRotate={setRotate} 
+    setRotate={rotator} 
     onGameMenu={() => setScreen('gamemenu')}
     actionBar={actionBar}
     boardRef={boardRef}
@@ -126,7 +134,8 @@ export function Game({
       const matrix = new DOMMatrix(window.getComputedStyle(boardRef.current).transform);
       matrix.invertSelf();
       point = matrix.transformPoint(point);
-      setHoverTile(map[Math.floor(point.y / tileDimensionInt)][Math.floor(point.x / tileDimensionInt)]);
+      const [tileX, tileY] = [Math.floor(point.x / tileDimensionInt), Math.floor(point.y / tileDimensionInt)];
+      if(tileY in map && tileX in map[tileY]) setHoverTile(map[tileY][tileX]);
     }}>
     <div style={{
       display:'grid',
