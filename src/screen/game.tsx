@@ -82,7 +82,7 @@ export function Game({
     const height = boardRef.current.clientHeight;
     setX(width / 2);
     setY(height / 2);
-    setRotate((angle + rotate) % 360);
+    setRotate((360 + angle + rotate) % 360);
   }
   const ap = 1;
   const grenadeCount = 1;
