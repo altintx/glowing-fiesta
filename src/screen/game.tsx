@@ -2,6 +2,7 @@ import React, { ReactElement, useRef, useState } from "react";
 import { Tile } from "../models/models";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
+import { Obstacle } from "../components/obstacle";
 
 type Actions = 'select' | 'move' | 'attack' | 'fortify' | 'wait' | 'end_turn' | 'grenade';
 type Character = {
@@ -163,17 +164,26 @@ export function Game({
               })()}
             />
           ).concat(cell.occupant? 
-            <img
-              src="marker.png" 
-              className='tile'
-              style={{
-                gridColumn: `${cellIndex + 1}`,
-                gridRow: `${rowIndex + 1}`,
-                width: tileDimension,
-                height: tileDimension,
-                rotate: `-${rotate}deg`
-              }}
-            /> : null,
+            (typeof cell.occupant === "string"?
+              <img
+                src="marker.png" 
+                className='tile'
+                style={{
+                  gridColumn: `${cellIndex + 1}`,
+                  gridRow: `${rowIndex + 1}`,
+                  width: tileDimension,
+                  height: tileDimension,
+                  rotate: `-${rotate}deg`
+                }}
+              /> : <Obstacle
+                {...cell.occupant} 
+                row={rowIndex + 1}
+                column={cellIndex + 1}
+                tileDimension={tileDimensionInt}
+                rotate={rotate}
+              />) : null,
+
+            // primary selection
             canSelect && cell === hoverTile? (<div
               className="focus_box focus_box_red"
               onClick={() => setSelectedTile(cell)}
@@ -184,6 +194,8 @@ export function Game({
                 width: tileDimension,
                 height: tileDimension,
               }} />): null,
+            
+            // primary selection (passive)
             cell === selectedTile? (<div
               className="focus_box focus_box_blue"
               onClick={() => setSelectedTile(null)}
@@ -193,6 +205,10 @@ export function Game({
                 width: tileDimension,
                 height: tileDimension,
               }} />): null,
+            
+            // todo: secondary selection.
+
+            // attacking sub-selection
             (isAttacking && canAttackTarget(cell))? ([<div
               onClick={() => setSelectedTile(null)}
               style={{
@@ -211,6 +227,8 @@ export function Game({
                   width: tileDimension,
                   height: tileDimension,
                 }} />]: [])): null,
+            
+            // moving sub-selection
             (isMoving && canMoveToTile(cell))? ([<div
               onClick={() => setSelectedTile(null)}
               style={{
