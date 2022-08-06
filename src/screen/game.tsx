@@ -3,6 +3,7 @@ import { Tile } from "../models/models";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
 import { Obstacle } from "../components/obstacle";
+import { SelectionTile } from "../components/selection-tile";
 
 type Actions = 'select' | 'move' | 'attack' | 'fortify' | 'wait' | 'end_turn' | 'grenade';
 type Character = {
@@ -184,69 +185,58 @@ export function Game({
               />) : null,
 
             // primary selection
-            canSelect && cell === hoverTile? (<div
-              className="focus_box focus_box_red"
+            <SelectionTile 
+              enabled={canSelect && (cell === hoverTile)}
+              borderColor="#ff0000"
+              x={cellIndex + 1}
+              y={rowIndex + 1}
+              size={tileDimension}
               onClick={() => setSelectedTile(cell)}
-              // this ought to prompt for an action
-              style={{
-                gridColumn: `${cellIndex + 1}`,
-                gridRow: `${rowIndex + 1}`,
-                width: tileDimension,
-                height: tileDimension,
-              }} />): null,
-            
-            // primary selection (passive)
-            cell === selectedTile? (<div
-              className="focus_box focus_box_blue"
+            />,
+            <SelectionTile 
+              enabled={cell === selectedTile}
+              borderColor="#0000ff"
+              x={cellIndex + 1}
+              y={rowIndex + 1}
+              size={tileDimension}
               onClick={() => setSelectedTile(null)}
-              style={{
-                gridColumn: `${cellIndex + 1}`,
-                gridRow: `${rowIndex + 1}`,
-                width: tileDimension,
-                height: tileDimension,
-              }} />): null,
-            
+            />,
             // todo: secondary selection.
 
             // attacking sub-selection
-            (isAttacking && canAttackTarget(cell))? ([<div
-              onClick={() => setSelectedTile(null)}
-              style={{
-                gridColumn: `${cellIndex + 1}`,
-                gridRow: `${rowIndex + 1}`,
-                width: tileDimension,
-                height: tileDimension,
-                backgroundColor: "#ff0000",
-                opacity: 0.1
-              }} />].concat(hovered? [<div
-                className={`focus_box ${hovered && 'focus_box_attack' }`}
-                onClick={() => setSelectedTile(null)}
-                style={{
-                  gridColumn: `${cellIndex + 1}`,
-                  gridRow: `${rowIndex + 1}`,
-                  width: tileDimension,
-                  height: tileDimension,
-                }} />]: [])): null,
-            
+            <SelectionTile 
+              enabled={isAttacking && canAttackTarget(cell)}
+              x={cellIndex+1}
+              y={rowIndex+1}
+              size={tileDimension}
+              tint="#ff0000"
+            />,
+            <SelectionTile 
+              enabled={hovered && isAttacking && canAttackTarget(cell)}
+              borderColor="#ff0000"
+              x={cellIndex+1}
+              y={rowIndex+1}
+              size={tileDimension}
+              tint="#ff0000"
+              borderThrob={true}
+            />,
+
             // moving sub-selection
-            (isMoving && canMoveToTile(cell))? ([<div
-              onClick={() => setSelectedTile(null)}
-              style={{
-                backgroundColor: '#00ff00',
-                opacity: 0.1,
-                gridColumn: `${cellIndex + 1}`,
-                gridRow: `${rowIndex + 1}`,
-                width: tileDimension,
-                height: tileDimension,
-              }} />].concat(hovered? [<div
-                className={`focus_box ${hovered && 'focus_box_green' }`}
-                onClick={() => setSelectedTile(null)}
-                style={{
-                  gridColumn: `${cellIndex + 1}`,
-                  gridRow: `${rowIndex + 1}`,
-                  width: tileDimension,
-                  height: tileDimension,
-                }} />]: [])): null
+            <SelectionTile 
+              enabled={isMoving && canMoveToTile(cell)}
+              tint="#00ff00"
+              x={cellIndex+1}
+              y={rowIndex+1}
+              size={tileDimension}
+            />,
+            <SelectionTile 
+              enabled={isMoving && canMoveToTile(cell) && hovered}
+              borderColor="#00ff00"
+              x={cellIndex+1}
+              y={rowIndex+1}
+              size={tileDimension}
+              borderThrob={true}
+            />
           ).filter(v => v)
           })
       )}
