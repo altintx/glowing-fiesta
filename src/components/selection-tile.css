@@ -1,0 +1,21 @@
+@keyframes throbber {
+    0% {
+      border-width: 0.5em;
+    }
+    20% {
+      border-width: 0.2em;
+    }
+    80% {
+        border-width: 0.2em;
+    }
+    100% {
+        border-width: 0.5em;
+    }
+  }
+  
+  .animated-throbber {
+    animation: throbber 0.9s linear infinite;
+    overflow: hidden;
+    z-index: 2;
+  }
+  

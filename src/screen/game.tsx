@@ -93,7 +93,7 @@ export function Game({
   const canMove = selectedTile && ap > 0;
   const canFortify = false; // need cover
   const canEndTurn = ap > 0;
-  const canGrenade = ap > 0 && grenadeCount > 0;
+  const canGrenade = !!selectedTile && ap > 0 && grenadeCount > 0;
   const canWait = false;
   const isAttacking = action === "attack" || action === "grenade";
   const isMoving = action === "move";
@@ -106,6 +106,10 @@ export function Game({
     <button disabled={!canGrenade} onClick={() => setAction('grenade')}>AOE Attack</button>
     <button disabled={!canWait} onClick={() => setAction('wait')}>Wait</button>
     <button disabled={!canEndTurn} onClick={() => setAction('end_turn')}>End Turn</button>
+    <button onClick={() => {
+      setAction('select');
+      setSelectedTile(null);
+    }}>Clear</button>
     <button disabled={!canFortify} onClick={() => setAction('fortify')}>Fortify</button>
   </>;
   const inspector = <TileInspector
@@ -186,11 +190,12 @@ export function Game({
 
             // primary selection
             <SelectionTile 
-              enabled={canSelect && (cell === hoverTile)}
-              borderColor="#ff0000"
+              enabled={canSelect && hovered}
+              borderColor="#ffffff"
               x={cellIndex + 1}
               y={rowIndex + 1}
               size={tileDimension}
+              borderThrob={true}
               onClick={() => setSelectedTile(cell)}
             />,
             <SelectionTile 
@@ -210,17 +215,8 @@ export function Game({
               y={rowIndex+1}
               size={tileDimension}
               tint="#ff0000"
+              borderThrob={hovered}
             />,
-            <SelectionTile 
-              enabled={hovered && isAttacking && canAttackTarget(cell)}
-              borderColor="#ff0000"
-              x={cellIndex+1}
-              y={rowIndex+1}
-              size={tileDimension}
-              tint="#ff0000"
-              borderThrob={true}
-            />,
-
             // moving sub-selection
             <SelectionTile 
               enabled={isMoving && canMoveToTile(cell)}
@@ -228,15 +224,8 @@ export function Game({
               x={cellIndex+1}
               y={rowIndex+1}
               size={tileDimension}
+              borderThrob={hovered}
             />,
-            <SelectionTile 
-              enabled={isMoving && canMoveToTile(cell) && hovered}
-              borderColor="#00ff00"
-              x={cellIndex+1}
-              y={rowIndex+1}
-              size={tileDimension}
-              borderThrob={true}
-            />
           ).filter(v => v)
           })
       )}
