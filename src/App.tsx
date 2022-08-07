@@ -56,15 +56,16 @@ class App extends React.Component<
   }
   componentDidMount() {
     const socket = this.props.socket;
+    const accelDebug = true;
     if(!socket) return;
-    console.log("binding")
     socket.on("hello", ({language}) => {
       this.setState({ connected: true, acceptLanguage: language });
+      if(accelDebug) socket.emit('login', { name: 'joe' }); 
     })
     socket.on('you_logged_in', (response) => {
-      console.log("you logged in");
       // todo: response really ought to include the assigned screen name
       this.setScreen('loggedinmenu');
+      if(accelDebug) socket.emit('new_game');
     })
     // socket.emit('new_game');
     socket.on('you_joined_game', (response) => {
@@ -79,13 +80,15 @@ class App extends React.Component<
       if(mission) {
         socket.emit('mission_info');
       } else {
+        if(accelDebug) {
+          return socket.emit("start_next_mission", 0);
+        }
         if(window.confirm("Start mission?")) {
           socket.emit("start_next_mission", 0);
         }
       }
     })
     socket.on('mission_info', (response) => {
-      console.log('mission_info');
       const _map: Tile[][] = [];
       for(let y = 0; y < response.map.height; y++) {
         _map[y] = [];
