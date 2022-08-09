@@ -1,11 +1,10 @@
 import React, { ReactElement, useRef, useState } from "react";
-import { Tile } from "../models/models";
+import { Operator, Tile } from "../models/models";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
 import { Obstacle } from "../components/obstacle";
 import { SelectionTile } from "../components/selection-tile";
 
-type Actions = 'select' | 'move' | 'attack' | 'fortify' | 'wait' | 'end_turn' | 'grenade';
 type Character = {
   name: string;
   uuid: string;
@@ -13,71 +12,46 @@ type Character = {
   race: any;
   faction: any;
 }
+
+type OperatorArrows = {
+  operator: Operator;
+  tile: Tile;
+  mode: string;
+}
 type Uuid = string;
 function isPlayer(occupant: Character | null): boolean {
   return occupant?.faction === 0;
 }
 export function Game({ 
   setScreen, 
-  screenName, 
+  operator, 
   gameId, 
   missionId, 
   map, 
   characters,
-  language
+  language,
+  operatorArrows,
+  communicateTileFocus,
 }: {
   setScreen: (screen: string) => void, 
-  screenName: string, 
+  operator: Operator, 
   gameId: string, 
   missionId: string, 
   map: Tile[][], 
   characters: Record<Uuid, Character>,
-  language: string
+  language: string,
+  operatorArrows: OperatorArrows[],
+  communicateTileFocus: (x: number, y: number, tile: Tile, mode: string) => void
 }) {
-  const [x, setX] = React.useState(0);
-  const [y, setY] = React.useState(0);
+  const [[x, setX], [y, setY]] = [React.useState(0), React.useState(0)];
   const [zoom, setZoom] = React.useState(1);
   const [rotate, setRotate] = React.useState(45);
   const tileDimensionInt = 64 + zoom * 32;
   const tileDimension = `${tileDimensionInt}px`;
   const zoomOutEnabled = zoom > -1, zoomInEnabled = zoom < 3;
-  const [hoverTile, setHoverTile] = React.useState<Tile | null>(null);
-  const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
-  const [moveDestination, setMoveDestination] = useState<Tile | null>(null);
-  const [attackTarget, setAttackTarget] = useState<Tile | null>(null);
-  const [action, setAction] = useState<Actions>("select");
   const boardRef = useRef<HTMLDivElement>(null);
-  const canSelectTile = (tile: Tile | null) => {
-    if(!tile) return true;
-    return !!tile.occupant && isPlayer(occupant(tile.occupant));
-  }
+  const hoverTiles = operatorArrows.filter(arrow => arrow.mode === 'hover');
   const occupant = (id: Uuid): Character | null => id in characters? characters[id] : null;
-  const canMoveToTile = (tile: Tile | null) => {
-    if(!tile) return false;
-    if(selectedTile === null) return false;
-    if(tile.occupant) return false;
-    const maxMovement = 5;
-    const distance = Math.ceil(Math.sqrt(Math.pow(tile.x - selectedTile.x, 2) + Math.pow(tile.y - selectedTile.y, 2)));
-    if(distance <= maxMovement) return true;
-    return false;
-  }
-  const canAttackTarget = (tile: Tile | null) => {
-    if(!tile) return false;
-    if(selectedTile === null) return false;
-    if(action === 'attack') {
-      // todo: obstacles, throw distance, etc
-      const maxMovement = 10;
-      const distance = Math.sqrt(Math.pow(tile.x - selectedTile.x, 2) + Math.pow(tile.y - selectedTile.y, 2));
-      if(distance <= maxMovement && tile.occupant) return true;
-    } else if (action === 'grenade') {
-      // todo: obstacles, throw distance, etc
-      const maxMovement = 7;
-      const distance = Math.sqrt(Math.pow(tile.x - selectedTile.x, 2) + Math.pow(tile.y - selectedTile.y, 2));
-      if(distance <= maxMovement) return true;
-
-    }
-    return false;
-  }
   const rotator = (angle: number): void => {
     if(!(boardRef && boardRef.current)) return;
     const width = boardRef.current.clientWidth;
@@ -86,52 +60,22 @@ export function Game({
     setY(height / 2);
     setRotate((360 + angle + rotate) % 360);
   }
-  const ap = 1;
-  const grenadeCount = 1;
-  const canSelect = canSelectTile(hoverTile);
-  const canAttack = !!selectedTile && ap > 0;
-  const canMove = selectedTile && ap > 0;
-  const canFortify = false; // need cover
-  const canEndTurn = ap > 0;
-  const canGrenade = !!selectedTile && ap > 0 && grenadeCount > 0;
-  const canWait = false;
-  const isAttacking = action === "attack" || action === "grenade";
-  const isMoving = action === "move";
-  const isFortifying = action === "fortify";
+  const setSelectedTile = (tile: Tile): void => {
+    operator?.socket?.emit('tile_interaction', { tile, mode: 'select', operator: operator });
+  }
 
   if(map.length === 0) return null;
-  const actionBar = <>
-    <button disabled={!canMove} onClick={() => setAction('move')}>Move</button>
-    <button disabled={!canAttack} onClick={() => setAction('attack')}>Targetted Attack</button>
-    <button disabled={!canGrenade} onClick={() => setAction('grenade')}>AOE Attack</button>
-    <button disabled={!canWait} onClick={() => setAction('wait')}>Wait</button>
-    <button disabled={!canEndTurn} onClick={() => setAction('end_turn')}>End Turn</button>
-    <button onClick={() => {
-      setAction('select');
-      setSelectedTile(null);
-    }}>Clear</button>
-    <button disabled={!canFortify} onClick={() => setAction('fortify')}>Fortify</button>
-  </>;
-  const inspector = <TileInspector
+  const inspector = <>{hoverTiles.map(arrow => <TileInspector
     language={language} 
-    tile={hoverTile} 
-    occupant={occupant(hoverTile?.occupant)} 
-  />;
+    tile={arrow.tile} 
+    occupant={occupant(arrow.tile.occupant)} 
+  />)}</>;
   return <Viewport 
-    x={x} 
-    y={y} 
-    zoom={zoom} 
-    setX={setX} 
-    setY={setY} 
-    setZoom={setZoom} 
-    zoomOutEnabled={zoomOutEnabled} 
-    zoomInEnabled={zoomInEnabled} 
-    rotate={rotate} 
-    setRotate={rotator} 
+    x={x} y={y} setX={setX} setY={setY} zoom={zoom} setZoom={setZoom} 
+    zoomOutEnabled={zoomOutEnabled}  zoomInEnabled={zoomInEnabled} 
+    rotate={rotate} setRotate={rotator} 
     onGameMenu={() => setScreen('gamemenu')}
-    actionBar={actionBar}
-    boardRef={boardRef}
-    inspector={inspector}
+    boardRef={boardRef} inspector={inspector}
     onMouseMove={(e) => {
       if(!boardRef.current) return;
       const [mouseX, mouseY] = [e.clientX, e.clientY];
@@ -141,7 +85,9 @@ export function Game({
       matrix.invertSelf();
       point = matrix.transformPoint(point);
       const [tileX, tileY] = [Math.floor(point.x / tileDimensionInt), Math.floor(point.y / tileDimensionInt)];
-      if(tileY in map && tileX in map[tileY]) setHoverTile(map[tileY][tileX]);
+      if(tileY in map && tileX in map[tileY] && !hoverTiles.map(arrow => arrow.tile).includes(map[tileY][tileX])) {
+        communicateTileFocus(tileX, tileY, map[tileY][tileX], 'hover');
+      }
     }}>
     <div style={{
       display:'grid',
@@ -153,7 +99,7 @@ export function Game({
     }}>
       {map.map((row, rowIndex) =>
         row.map((cell, cellIndex) => {
-          const hovered = cell === hoverTile;
+          const hovered = hoverTiles.map(a => a.tile.uuid).includes(cell.uuid);
           return cell['textures'].map((texture): ReactElement | null => 
             <img 
               className="tile"
@@ -190,7 +136,7 @@ export function Game({
 
             // primary selection
             <SelectionTile 
-              enabled={canSelect && hovered}
+              enabled={hovered}
               borderColor="#ffffff"
               x={cellIndex + 1}
               y={rowIndex + 1}
@@ -198,34 +144,8 @@ export function Game({
               borderThrob={true}
               onClick={() => setSelectedTile(cell)}
             />,
-            <SelectionTile 
-              enabled={cell === selectedTile}
-              borderColor="#0000ff"
-              x={cellIndex + 1}
-              y={rowIndex + 1}
-              size={tileDimension}
-              onClick={() => setSelectedTile(null)}
-            />,
-            // todo: secondary selection.
-
-            // attacking sub-selection
-            <SelectionTile 
-              enabled={isAttacking && canAttackTarget(cell)}
-              x={cellIndex+1}
-              y={rowIndex+1}
-              size={tileDimension}
-              tint="#ff0000"
-              borderThrob={hovered}
-            />,
-            // moving sub-selection
-            <SelectionTile 
-              enabled={isMoving && canMoveToTile(cell)}
-              tint="#00ff00"
-              x={cellIndex+1}
-              y={rowIndex+1}
-              size={tileDimension}
-              borderThrob={hovered}
-            />,
+            
+            
           ).filter(v => v)
           })
       )}

@@ -2,35 +2,39 @@ import React from 'react';
 import MainMenu from './screen/main-menu';
 import { Socket } from 'socket.io-client'
 import GameMenu from './screen/game-menu';
-import { Tile } from './models/models';
+import { Operator, Tile } from './models/models';
 import { Game } from './screen/game';
-
+import { v4 as uuid } from 'uuid';
 
 // this is the router
 class App extends React.Component<
-  { socket: Socket | null },
+  { socket?: Socket },
   { 
     screen: string, 
-    gameId: string | null, 
-    missionId: string | null, 
+    gameId?: string, 
+    missionId?: string, 
     map: Tile[][], 
-    screenName: string | null, 
+    operator?: Operator,
     characters: Record<string, any>, 
     connected: boolean, 
-    acceptLanguage: string
+    acceptLanguage: string,
+    cursors: any[],
+    tileEventIds: string[]
+    debouncedCursor?: NodeJS.Timeout;
+    sig: string;
   }
 > {
-  constructor(props: { socket: Socket | null }) {
+  constructor(props: { socket?: Socket }) {
     super(props);
     this.state = {
       screen: 'mainmenu',
-      gameId: null,
-      missionId: null,
       map: [],
-      screenName: null,
       characters: {},
       connected: false,
-      acceptLanguage: 'en'
+      acceptLanguage: 'en',
+      cursors: [],
+      tileEventIds: [],
+      sig: uuid()
     }
   }
   setScreen(screen: string) {
@@ -65,7 +69,10 @@ class App extends React.Component<
     socket.on('you_logged_in', (response) => {
       // todo: response really ought to include the assigned screen name
       this.setScreen('loggedinmenu');
-      if(accelDebug) socket.emit('new_game');
+      if(accelDebug) {
+        socket.emit('new_game');
+        this.setOperator('joe');
+      }
     })
     // socket.emit('new_game');
     socket.on('you_joined_game', (response) => {
@@ -102,16 +109,53 @@ class App extends React.Component<
       }
       this.setMap(_map);
     });
+    socket.on('style_tile', ({ tile, mode, announcer, sig }) => {
+      if(this.state.tileEventIds.includes(sig)) return;
+      this.setState({
+        cursors: [{
+          tile: tile,
+          mode: mode,
+          operator: announcer
+        }]
+      })
+    })
     socket.on("characters_info", (response) => {
       this.setCharacters(response);
     });
     socket.emit("hello");
   }
-  setScreenName(name: string | null) {
-    this.setState({ screenName: name });
+  setOperator(name: string) {
+    this.setState({ 
+      operator: name? {
+        screenName: name,
+        socket: this.props.socket
+      } as Operator : undefined
+    });
+  }
+  communicateTileFocus(x: number, y: number , tile: Tile, mode: string ) {
+    const sig = uuid();
+    if(this.state.debouncedCursor) clearTimeout(this.state.debouncedCursor);
+    this.setState({
+      cursors: [{
+        tile,
+        mode,
+        operator: this.state.operator as Operator,
+        sig
+      }],
+      sig,
+      tileEventIds: this.state.tileEventIds.concat(sig),
+      debouncedCursor: setTimeout(() => {
+        if(this.state.sig === sig) {
+          this.state.operator?.socket?.emit('tile_interaction', { x, y, mode, sig });
+        }
+        this.setState({
+          debouncedCursor: undefined
+        });
+      }, 50)
+    })
   }
   render() {
-    const { screen, gameId, missionId, map, screenName, characters, connected, acceptLanguage } = this.state;
+    const { screen, gameId, missionId, map, operator, characters, connected, acceptLanguage, cursors } = this.state;
     if(!connected) return <div>Connecting</div>;
     const socket = this.props.socket as Socket;
     const setScreen = this.setScreen.bind(this);
@@ -119,16 +163,16 @@ class App extends React.Component<
       case 'mainmenu':
         return <MainMenu language={acceptLanguage} login={(screenName) => {
           socket.emit('login', { name: screenName });
-          this.setScreenName(screenName);
+          this.setOperator(screenName);
         }} />
       case "loggedinmenu":
         return <GameMenu 
           language={acceptLanguage}
-          screenName={screenName as string}
+          operator={operator as Operator}
           onNewGame={() => socket.emit('new_game')}
           onLogOut={() => {
             this.setScreen("mainmenu");
-            this.setScreenName(null);
+            this.setState({ operator: undefined });
           }}
           onFindGame={() => {
           }}
@@ -138,11 +182,13 @@ class App extends React.Component<
       case "game":
         return <Game 
           language={acceptLanguage}
-          screenName={screenName as string} 
+          operator={operator as Operator} 
           gameId={gameId as string} 
           missionId={missionId as string} 
           setScreen={setScreen} 
           map={map} 
+          operatorArrows={cursors}
+          communicateTileFocus={this.communicateTileFocus.bind(this)}
           characters={characters} 
         />
       default:

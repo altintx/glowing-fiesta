@@ -1,22 +1,24 @@
 import React from 'react';
+import { Operator } from '../models/models';
 export default function GameMenu({
-    screenName, 
+    operator, 
     language,
     onNewGame, 
     onLogOut, 
     onFindGame, 
     onOptions 
 }: { 
-    screenName: string, 
+    operator: Operator,
     language: string,
     onNewGame: () => void, 
     onLogOut: () => void, 
     onFindGame: () => void, 
     onOptions: () => void 
 }) {
+    if(!operator) return <>Loading...</>
     return <>
         <h1>Game Menu</h1>
-        <p>You're logged in as {screenName} </p>
+        <p>You're logged in as {operator.screenName} </p>
         <ul>
             <li>
                 <button onClick={onNewGame}>New Game</button>
