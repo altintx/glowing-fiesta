@@ -1,46 +1,36 @@
-# Getting Started with Create React App
+[Glowing-Fiesta](https://www.github.com/altintx/glowing-fiesta) is an HTML front end for
+[Urban-Memory](https://www.github.com/altintx/urban-memory). Together they form an unnamed
+game. It's a tactical, turn based war strategy game. 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+At this point, things are not yet very game-like. There's no design, no theme, animation, 
+anything conventional toward a game. 
 
-## Available Scripts
+Eventually this will be a single or multi-player game. Single player is effectively a
+multiplayer game session with a single connected player. Urban Memory holds game state, rule
+enforcement, turn ordering, stuff like that. Glowing Fiesta is what a normal user would
+start. 
 
-In the project directory, you can run:
+Single player will pit human versus AI. Human controls the "good" guys, while the AI
+controls the "bad" guys. 
 
-### `npm start`
+Multiplayer will have 2 modes: cooperative and competitive. 
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Cooperative mode plays like single player, but control of the "good" characters is shared
+amongst players. Subject to change, this will be between 1-6 humans. 
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Competitive mode is styled like PVP. There is no AI. One human controls the entire
+"good" squad of characters, while the other human controls the entire "bad" squad.
 
-### `npm test`
+## Running
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Clone both repos.
+2. I think it's easiest to start with urban-memory
+3. `cd urban-memory`
+4. `yarn`
+5. `yarn serve`
+6. `cd glowing-fiesta`
+7. `yarn`
+8. `DANGEROUSLY_DISABLE_HOST_CHECK=1 yarn start`
+9. You'll get a port conflict because urban-memory is already using `:3000`. Allow the alternate port.
+10. A tab will open and launch into a playfield.
+11. For debug's sake, initial set up is scripted away, but to work on those hidden features set `const accelDebug = false;` in `src/App.tsx:componentDidMount`
