@@ -14,7 +14,7 @@ export function SelectionTile({x, y, size, tint, borderColor, borderThrob, onCli
     let style: CSSProperties = {
         borderWidth: "0.2em",
         borderStyle: "solid",
-        borderRadius: "0.5em",
+        borderRadius: "1em",
         boxSizing: "border-box",
         width: size,
         height: size,

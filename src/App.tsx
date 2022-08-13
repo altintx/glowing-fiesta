@@ -2,7 +2,7 @@ import React from 'react';
 import MainMenu from './screen/main-menu';
 import { Socket } from 'socket.io-client'
 import GameMenu from './screen/game-menu';
-import { Operator, Tile } from './models/models';
+import { Action, Operator, Tile } from './models/models';
 import { Game } from './screen/game';
 import { v4 as uuid } from 'uuid';
 
@@ -22,6 +22,7 @@ class App extends React.Component<
     tileEventIds: string[]
     debouncedCursor?: NodeJS.Timeout;
     sig: string;
+    availableActions: any[];
   }
 > {
   constructor(props: { socket?: Socket }) {
@@ -34,7 +35,8 @@ class App extends React.Component<
       acceptLanguage: 'en',
       cursors: [],
       tileEventIds: [],
-      sig: uuid()
+      sig: uuid(),
+      availableActions: []
     }
   }
   setScreen(screen: string) {
@@ -94,7 +96,10 @@ class App extends React.Component<
           socket.emit("start_next_mission", 0);
         }
       }
-    })
+    });
+    socket.on("actions_for_tile", ({ tile, actions, sig }) => {
+      this.setState({ availableActions: actions });
+    });
     socket.on('mission_info', (response) => {
       const _map: Tile[][] = [];
       for(let y = 0; y < response.map.height; y++) {
@@ -111,12 +116,27 @@ class App extends React.Component<
     });
     socket.on('style_tile', ({ tile, mode, announcer, sig }) => {
       if(this.state.tileEventIds.includes(sig)) return;
+      console.log(mode);
       this.setState({
         cursors: [{
+          // todo: retire old cursors
+          // special for select
           tile: tile,
           mode: mode,
           operator: announcer
         }]
+      });
+    });
+    socket.on('tile_interaction', ({ tile, mode, announcer, sig }) => {
+      if(this.state.tileEventIds.includes(sig)) return;
+      this.setState({
+        cursors: this.cursorsArray({
+          // todo: retire old cursors
+          // special for select
+          tile: tile,
+          mode: mode,
+          operator: announcer
+        })
       })
     })
     socket.on("characters_info", (response) => {
@@ -132,20 +152,41 @@ class App extends React.Component<
       } as Operator : undefined
     });
   }
+  setAction(action: Action): void {
+    console.log(action);
+  }
+  cursorsArray(cursor: any): any[] {
+    const cursors = this.state.cursors;
+    switch(cursor.mode) {
+      case 'select':
+        return cursors.filter(c => c.mode != 'select').concat(cursor);
+      case 'hover':
+        return cursors.filter(c => c.mode != 'hover').concat(cursor);
+      case 'clear':
+        return cursors.filter(c => c.tile.uuid != cursor.tile.uuid);
+      default:
+        return cursors.concat(cursor);
+    }
+  }
   communicateTileFocus(x: number, y: number , tile: Tile, mode: string ) {
+    console.log(`Setting tile ${x}, ${y} to ${mode}`);
     const sig = uuid();
-    if(this.state.debouncedCursor) clearTimeout(this.state.debouncedCursor);
+    if(this.state.debouncedCursor) {
+      clearTimeout(this.state.debouncedCursor);
+      console.log("Clearing debounced cursor");
+    }
     this.setState({
-      cursors: [{
+      cursors: this.cursorsArray({
         tile,
         mode,
         operator: this.state.operator as Operator,
         sig
-      }],
+      }),
       sig,
       tileEventIds: this.state.tileEventIds.concat(sig),
       debouncedCursor: setTimeout(() => {
         if(this.state.sig === sig) {
+          console.log(`tile_interaction ${x}, ${y} ${mode}`);
           this.state.operator?.socket?.emit('tile_interaction', { x, y, mode, sig });
         }
         this.setState({
@@ -189,7 +230,9 @@ class App extends React.Component<
           map={map} 
           operatorArrows={cursors}
           communicateTileFocus={this.communicateTileFocus.bind(this)}
+          availableActions={this.state.availableActions}
           characters={characters} 
+          setAction={this.setAction.bind(this)}
         />
       default:
         return <div>Unknown state</div>

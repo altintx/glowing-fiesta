@@ -4,6 +4,7 @@ import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
 import { Obstacle } from "../components/obstacle";
 import { SelectionTile } from "../components/selection-tile";
+import { LocalizedString } from "../components/localized-string";
 
 type Character = {
   name: string;
@@ -32,6 +33,8 @@ export function Game({
   language,
   operatorArrows,
   communicateTileFocus,
+  availableActions,
+  setAction,
 }: {
   setScreen: (screen: string) => void, 
   operator: Operator, 
@@ -41,7 +44,9 @@ export function Game({
   characters: Record<Uuid, Character>,
   language: string,
   operatorArrows: OperatorArrows[],
-  communicateTileFocus: (x: number, y: number, tile: Tile, mode: string) => void
+  communicateTileFocus: (x: number, y: number, tile: Tile, mode: string) => void,
+  availableActions: any[],
+  setAction: (action: any) => void,
 }) {
   const [[x, setX], [y, setY]] = [React.useState(0), React.useState(0)];
   const [zoom, setZoom] = React.useState(1);
@@ -51,6 +56,7 @@ export function Game({
   const zoomOutEnabled = zoom > -1, zoomInEnabled = zoom < 3;
   const boardRef = useRef<HTMLDivElement>(null);
   const hoverTiles = operatorArrows.filter(arrow => arrow.mode === 'hover');
+  const selectedTiles = operatorArrows.filter(arrow => arrow.mode === 'select');
   const occupant = (id: Uuid): Character | null => id in characters? characters[id] : null;
   const rotator = (angle: number): void => {
     if(!(boardRef && boardRef.current)) return;
@@ -60,8 +66,13 @@ export function Game({
     setY(height / 2);
     setRotate((360 + angle + rotate) % 360);
   }
-  const setSelectedTile = (tile: Tile): void => {
-    operator?.socket?.emit('tile_interaction', { tile, mode: 'select', operator: operator });
+  const setSelectedTile = (tile: Tile, clear = false): void => {
+    // operator?.socket?.emit('tile_interaction', { tile, mode: 'select', operator: operator });
+    communicateTileFocus(tile.x, tile.y, map[tile.y][tile.x], clear? 'clear': 'select')
+  }
+
+  const canSelectTile = (tile: Tile): boolean => {
+    return tile.occupant && isPlayer(occupant(tile.occupant));
   }
 
   if(map.length === 0) return null;
@@ -75,6 +86,9 @@ export function Game({
     zoomOutEnabled={zoomOutEnabled}  zoomInEnabled={zoomInEnabled} 
     rotate={rotate} setRotate={rotator} 
     onGameMenu={() => setScreen('gamemenu')}
+    actionBar={<>{availableActions && "length" in availableActions && availableActions.map(action => (
+      <button onClick={() => setAction(action)}><LocalizedString translations={action.name} language={language} /></button>
+    ))}</>}
     boardRef={boardRef} inspector={inspector}
     onMouseMove={(e) => {
       if(!boardRef.current) return;
@@ -100,6 +114,7 @@ export function Game({
       {map.map((row, rowIndex) =>
         row.map((cell, cellIndex) => {
           const hovered = hoverTiles.map(a => a.tile.uuid).includes(cell.uuid);
+          const selected = selectedTiles.map(a => a.tile.uuid).includes(cell.uuid);
           return cell['textures'].map((texture): ReactElement | null => 
             <img 
               className="tile"
@@ -135,16 +150,25 @@ export function Game({
               />) : null,
 
             // primary selection
-            <SelectionTile 
+            canSelectTile(cell)? <SelectionTile 
               enabled={hovered}
-              borderColor="#ffffff"
+              borderColor="rgba(255,255,255,0.5)"
               x={cellIndex + 1}
               y={rowIndex + 1}
               size={tileDimension}
               borderThrob={true}
               onClick={() => setSelectedTile(cell)}
+            />: null,
+            // primary selection
+            <SelectionTile 
+              enabled={selected}
+              borderColor="rgba(64,255,64,0.5)"
+              x={cellIndex + 1}
+              y={rowIndex + 1}
+              size={tileDimension}
+              borderThrob={true}
+              onClick={() => setSelectedTile(cell, true)}
             />,
-            
             
           ).filter(v => v)
           })
