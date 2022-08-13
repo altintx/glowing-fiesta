@@ -162,11 +162,11 @@ class App extends React.Component<
     const cursors = this.state.cursors;
     switch(cursor.mode) {
       case 'select':
-        return cursors.filter(c => c.mode != 'select').concat(cursor);
+        return cursors.filter(c => c.mode !== 'select').concat(cursor);
       case 'hover':
-        return cursors.filter(c => c.mode != 'hover').concat(cursor);
+        return cursors.filter(c => c.mode !== 'hover').concat(cursor);
       case 'clear':
-        return cursors.filter(c => c.tile.uuid != cursor.tile.uuid);
+        return cursors.filter(c => c.tile.uuid !== cursor.tile.uuid);
       default:
         return cursors.concat(cursor);
     }

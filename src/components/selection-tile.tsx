@@ -1,4 +1,4 @@
-import React, { ReactElement, CSSProperties, HTMLAttributes } from "react";
+import React, { ReactElement, CSSProperties } from "react";
 import "./selection-tile.css";
 
 function parseColor(html: string): number[] {

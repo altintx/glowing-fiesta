@@ -1,4 +1,4 @@
-import React, { ReactElement, useRef, useState } from "react";
+import React, { ReactElement, useRef } from "react";
 import { Operator, Tile } from "../models/models";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
@@ -118,7 +118,8 @@ export function Game({
           return cell['textures'].map((texture): ReactElement | null => 
             <img 
               className="tile"
-              src={`thethirdsequence/${texture.graphic}512.jpg`} 
+              src={`thethirdsequence/${texture.graphic}512.jpg`}
+              alt={texture.graphic}
               style={(() => {
                 const css = {
                   gridColumn: `${cellIndex + 1}`,
@@ -134,6 +135,7 @@ export function Game({
               <img
                 src="marker.png" 
                 className='tile'
+                alt="marker "
                 style={{
                   gridColumn: `${cellIndex + 1}`,
                   gridRow: `${rowIndex + 1}`,
