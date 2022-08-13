@@ -6,6 +6,8 @@ import { Action, Operator, Tile } from './models/models';
 import { Game } from './screen/game';
 import { v4 as uuid } from 'uuid';
 
+let helloTimeout: NodeJS.Timeout | undefined;
+
 // this is the router
 class App extends React.Component<
   { socket?: Socket },
@@ -25,7 +27,7 @@ class App extends React.Component<
     availableActions: any[];
   }
 > {
-  constructor(props: { socket?: Socket }) {
+  constructor(props: { socket: Socket }) {
     super(props);
     this.state = {
       screen: 'mainmenu',
@@ -36,8 +38,11 @@ class App extends React.Component<
       cursors: [],
       tileEventIds: [],
       sig: uuid(),
-      availableActions: []
+      availableActions: [],
     }
+    this.bindSocket(props.socket);
+    clearTimeout(helloTimeout);
+    helloTimeout = setTimeout(() => props.socket.emit("hello"), 1000);
   }
   setScreen(screen: string) {
     this.setState({ screen });
@@ -60,10 +65,9 @@ class App extends React.Component<
   componentWillUnmount() {
     this.props.socket?.removeAllListeners();
   }
-  componentDidMount() {
-    const socket = this.props.socket;
+  bindSocket(socket: Socket) {
     const accelDebug = true;
-    if(!socket) return;
+    socket.removeAllListeners();
     socket.on("hello", ({language}) => {
       this.setState({ connected: true, acceptLanguage: language });
       if(accelDebug) socket.emit('login', { name: 'joe' }); 
@@ -142,7 +146,6 @@ class App extends React.Component<
     socket.on("characters_info", (response) => {
       this.setCharacters(response);
     });
-    socket.emit("hello");
   }
   setOperator(name: string) {
     this.setState({ 
