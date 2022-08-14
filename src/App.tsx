@@ -26,6 +26,7 @@ class App extends React.Component<
     sig: string;
     availableActions: any[];
     debouncedActionEvaluation?: NodeJS.Timeout;
+    action?: Action;
   }
 > {
   constructor(props: { socket: Socket }) {
@@ -170,6 +171,7 @@ class App extends React.Component<
     }
     this.setState({
       cursors: resetPossibles,
+      action: action,
       debouncedActionEvaluation: setTimeout(() => {
         this.props.socket?.emit('action_intention', { x, y, actionId: action.uuid, sig });
         this.setState({
@@ -266,6 +268,7 @@ class App extends React.Component<
           availableActions={this.state.availableActions}
           characters={characters} 
           setAction={this.setAction.bind(this)}
+          action={this.state.action}
         />
       default:
         return <div>Unknown state</div>

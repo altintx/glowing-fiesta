@@ -58,7 +58,6 @@ export function Viewport({
     {actionBar && <div style={{
         bottom: 0,
         position: 'absolute',
-        width: '100%',
         zIndex: 1000
       }}>{actionBar}</div>}
     {inspector}

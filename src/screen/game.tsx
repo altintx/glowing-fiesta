@@ -1,25 +1,12 @@
 import React, { ReactElement, useRef } from "react";
-import { Operator, Tile } from "../models/models";
+import { Operator, Tile, Character, Uuid, OperatorArrows } from "../models/models";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
 import { Obstacle } from "../components/obstacle";
 import { SelectionTile } from "../components/selection-tile";
 import { LocalizedString } from "../components/localized-string";
+import { CompositeTextureElement } from "../components/texture";
 
-type Character = {
-  name: string;
-  uuid: string;
-  class: any;
-  race: any;
-  faction: any;
-}
-
-type OperatorArrows = {
-  operator: Operator;
-  tile: Tile;
-  mode: string;
-}
-type Uuid = string;
 function isPlayer(occupant: Character | null): boolean {
   return occupant?.faction === 0;
 }
@@ -35,6 +22,7 @@ export function Game({
   communicateTileFocus,
   availableActions,
   setAction,
+  action,
 }: {
   setScreen: (screen: string) => void, 
   operator: Operator, 
@@ -47,6 +35,7 @@ export function Game({
   communicateTileFocus: (x: number, y: number, tile: Tile, mode: string) => void,
   availableActions: any[],
   setAction: (action: any, x: number, y: number) => void,
+  action: any,
 }) {
   const [[x, setX], [y, setY]] = [React.useState(0), React.useState(0)];
   const [zoom, setZoom] = React.useState(1);
@@ -76,6 +65,9 @@ export function Game({
 
   const canSelectTile = (tile: Tile): boolean => {
     return tile.occupant && isPlayer(occupant(tile.occupant));
+  }
+  const canSubSelectTile = (tile: Tile): boolean => {
+    return highlightedTiles.map(arrow => arrow.tile.uuid).includes(tile.uuid);
   }
 
   if(map.length === 0) return null;
@@ -133,22 +125,9 @@ export function Game({
           const hovered = hoverTiles.map(a => a.tile.uuid).includes(cell.uuid);
           const selected = selectedTiles.map(a => a.tile.uuid).includes(cell.uuid);
           const highlight = highlightedTiles.map(a => a.tile.uuid).includes(cell.uuid);
-          return cell['textures'].map((texture): ReactElement | null => 
-            <img 
-              className="tile"
-              src={`thethirdsequence/${texture.graphic}512.jpg`}
-              alt={texture.graphic}
-              style={(() => {
-                const css = {
-                  gridColumn: `${cellIndex + 1}`,
-                  gridRow: `${rowIndex + 1}`,
-                  width: tileDimension,
-                  height: tileDimension,
-                };
-                return css;
-              })()}
-            />
-          ).concat(cell.occupant? 
+          return ([
+            <CompositeTextureElement cellIndex={cellIndex} rowIndex={rowIndex} tileDimension={tileDimension} map={map} />
+          ] as Array<null | ReactElement | JSX.Element>).concat(cell.occupant? 
             (typeof cell.occupant === "string"?
               <img
                 src="marker.png" 
@@ -193,15 +172,16 @@ export function Game({
             <SelectionTile
               enabled={highlight}
               tint="#ff0000"
+              borderColor="rgba(255,255,255,1)"
               x={cellIndex + 1}
               y={rowIndex + 1}
               size={tileDimension}
-              borderThrob={false}
+              borderThrob={hovered && canSubSelectTile(cell)}
               onClick={() => console.log("should actually do action!!!")}
             />
             
           ).filter(v => v)
-          })
+        })
       )}
     </div>
   </Viewport>;

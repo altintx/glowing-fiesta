@@ -26,6 +26,22 @@ export type Action = {
   ap: number;
   cooldown: number;
   xp: number,
-  uuid: string,
-  
+  uuid: string, 
 }
+
+export type Character = {
+  name: string;
+  uuid: string;
+  class: any;
+  race: any;
+  faction: any;
+}
+
+export type OperatorArrows = {
+  operator: Operator;
+  tile: Tile;
+  mode: string;
+}
+
+export type Uuid = string;
+
