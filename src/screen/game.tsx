@@ -46,7 +46,7 @@ export function Game({
   operatorArrows: OperatorArrows[],
   communicateTileFocus: (x: number, y: number, tile: Tile, mode: string) => void,
   availableActions: any[],
-  setAction: (action: any) => void,
+  setAction: (action: any, x: number, y: number) => void,
 }) {
   const [[x, setX], [y, setY]] = [React.useState(0), React.useState(0)];
   const [zoom, setZoom] = React.useState(1);
@@ -57,6 +57,9 @@ export function Game({
   const boardRef = useRef<HTMLDivElement>(null);
   const hoverTiles = operatorArrows.filter(arrow => arrow.mode === 'hover');
   const selectedTiles = operatorArrows.filter(arrow => arrow.mode === 'select');
+  const highlightedTiles = operatorArrows.filter(arrow => arrow.mode === 'possible-destination');
+  
+  const selectedTile = selectedTiles.find(() => true);
   const occupant = (id: Uuid): Character | null => id in characters? characters[id] : null;
   const rotator = (angle: number): void => {
     if(!(boardRef && boardRef.current)) return;
@@ -87,7 +90,7 @@ export function Game({
     rotate={rotate} setRotate={rotator} 
     onGameMenu={() => setScreen('gamemenu')}
     actionBar={<>{availableActions && "length" in availableActions && availableActions.map(action => (
-      <button onClick={() => setAction(action)}><LocalizedString translations={action.name} language={language} /></button>
+      <button onClick={() => selectedTile && setAction(action, selectedTile.tile.x, selectedTile?.tile.y)}><LocalizedString translations={action.name} language={language} /></button>
     ))}</>}
     boardRef={boardRef} inspector={inspector}
     onMouseMove={(e) => {
@@ -102,6 +105,20 @@ export function Game({
       if(tileY in map && tileX in map[tileY] && !hoverTiles.map(arrow => arrow.tile).includes(map[tileY][tileX])) {
         communicateTileFocus(tileX, tileY, map[tileY][tileX], 'hover');
       }
+      if(mouseX < 20 || mouseX > boardRef.current.clientWidth - 20 || mouseY < 20 || mouseY > boardRef.current.clientHeight - 20) {
+        if(mouseX < 20) {
+          setX(x + 20);
+        }
+        if(mouseX > boardRef.current.clientWidth - 20) {
+          setX(x - 20);
+        }
+        if(mouseY < 20) {
+          setY(y + 20);
+        }
+        if(mouseY > boardRef.current.clientHeight - 20) {
+          setY(y - 20);
+        }
+      }
     }}>
     <div style={{
       display:'grid',
@@ -115,6 +132,7 @@ export function Game({
         row.map((cell, cellIndex) => {
           const hovered = hoverTiles.map(a => a.tile.uuid).includes(cell.uuid);
           const selected = selectedTiles.map(a => a.tile.uuid).includes(cell.uuid);
+          const highlight = highlightedTiles.map(a => a.tile.uuid).includes(cell.uuid);
           return cell['textures'].map((texture): ReactElement | null => 
             <img 
               className="tile"
@@ -151,7 +169,7 @@ export function Game({
                 rotate={rotate}
               />) : null,
 
-            // primary selection
+            // hoverstate
             canSelectTile(cell)? <SelectionTile 
               enabled={hovered}
               borderColor="rgba(255,255,255,0.5)"
@@ -161,7 +179,7 @@ export function Game({
               borderThrob={true}
               onClick={() => setSelectedTile(cell)}
             />: null,
-            // primary selection
+            // selected state
             <SelectionTile 
               enabled={selected}
               borderColor="rgba(64,255,64,0.5)"
@@ -171,6 +189,16 @@ export function Game({
               borderThrob={true}
               onClick={() => setSelectedTile(cell, true)}
             />,
+
+            <SelectionTile
+              enabled={highlight}
+              tint="#ff0000"
+              x={cellIndex + 1}
+              y={rowIndex + 1}
+              size={tileDimension}
+              borderThrob={false}
+              onClick={() => console.log("should actually do action!!!")}
+            />
             
           ).filter(v => v)
           })

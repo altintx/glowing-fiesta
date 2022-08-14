@@ -25,6 +25,7 @@ class App extends React.Component<
     debouncedCursor?: NodeJS.Timeout;
     sig: string;
     availableActions: any[];
+    debouncedActionEvaluation?: NodeJS.Timeout;
   }
 > {
   constructor(props: { socket: Socket }) {
@@ -119,20 +120,9 @@ class App extends React.Component<
       this.setMap(_map);
     });
     socket.on('style_tile', ({ tile, mode, announcer, sig }) => {
+      console.log("style tile", tile, mode, announcer);
       if(this.state.tileEventIds.includes(sig)) return;
-      console.log(mode);
-      this.setState({
-        cursors: [{
-          // todo: retire old cursors
-          // special for select
-          tile: tile,
-          mode: mode,
-          operator: announcer
-        }]
-      });
-    });
-    socket.on('tile_interaction', ({ tile, mode, announcer, sig }) => {
-      if(this.state.tileEventIds.includes(sig)) return;
+      console.log(mode, tile);
       this.setState({
         cursors: this.cursorsArray({
           // todo: retire old cursors
@@ -141,6 +131,17 @@ class App extends React.Component<
           mode: mode,
           operator: announcer
         })
+      });
+    });
+    socket.on('tile_interaction', ({ tile, tiles, mode, announcer, sig }) => {
+      this.setState({
+        cursors: this.cursorsArray((tiles || [tile]).map((t: any) => ({
+          // todo: retire old cursors
+          // special for select
+          tile: t,
+          mode: mode,
+          operator: announcer
+        })))
       })
     })
     socket.on("characters_info", (response) => {
@@ -155,18 +156,47 @@ class App extends React.Component<
       } as Operator : undefined
     });
   }
-  setAction(action: Action): void {
-    console.log(action);
+  setAction(action: Action, x: number, y: number): void {
+    const existingPossibles = this.state.cursors.filter(c => c.mode === 'possible-destination');
+    const resetPossibles = this.cursorsArray(existingPossibles.map(p => ({
+      mode: 'clear',
+      operator: this.state.operator,
+      tile: p.tile
+    })))
+    const sig = uuid();
+    if(this.state.debouncedActionEvaluation) {
+      clearTimeout(this.state.debouncedActionEvaluation);
+      console.log("Clearing debounced cursor");
+    }
+    this.setState({
+      cursors: resetPossibles,
+      debouncedActionEvaluation: setTimeout(() => {
+        this.props.socket?.emit('action_intention', { x, y, actionId: action.uuid, sig });
+        this.setState({
+          debouncedActionEvaluation: undefined
+        });
+      }, 50)
+    });
   }
-  cursorsArray(cursor: any): any[] {
+  cursorsArray(cursor: any | any[]): any[] {
     const cursors = this.state.cursors;
-    switch(cursor.mode) {
+    switch(cursor.mode || cursors[0].mode) {
       case 'select':
         return cursors.filter(c => c.mode !== 'select').concat(cursor);
       case 'hover':
         return cursors.filter(c => c.mode !== 'hover').concat(cursor);
       case 'clear':
-        return cursors.filter(c => c.tile.uuid !== cursor.tile.uuid);
+        if(Array.isArray(cursor)) {
+          return cursors.filter(c => !(cursor.map(c => c.tile.uuid).includes(c.tile.uuid)));
+        } else {
+          return cursors.filter(c => c.tile.uuid !== cursor.tile.uuid);
+        }
+      case 'possible-destination':
+        if('length' in cursor) {
+          return cursors.filter(c => c.mode !== 'possible-destination').concat(cursor);
+        } else {
+          return cursors.concat(cursor);
+        }
       default:
         return cursors.concat(cursor);
     }
