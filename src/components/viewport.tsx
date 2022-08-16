@@ -47,7 +47,8 @@ export function Viewport({
       onMouseMove={onMouseMove}
       style={{
         zIndex: 1,
-        transform:`rotate(${rotate}deg)`,
+        transform:`rotate(${rotate}deg)`, // TODO: perspective(1000px) rotateX(50deg) creates a cool 3d effect on
+                                          //       landscape but breaks selection transformations and sprites
         transformOrigin: 'top left',
         left:`${x}px`, 
         top: `${y}px`,
