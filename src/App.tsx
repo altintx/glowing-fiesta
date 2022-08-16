@@ -5,6 +5,7 @@ import GameMenu from './screen/game-menu';
 import { Action, Operator, Tile } from './models/models';
 import { Game } from './screen/game';
 import { v4 as uuid } from 'uuid';
+import { translate } from './components/localized-string';
 
 let helloTimeout: NodeJS.Timeout | undefined;
 
@@ -27,6 +28,7 @@ class App extends React.Component<
     availableActions: any[];
     debouncedActionEvaluation?: NodeJS.Timeout;
     action?: Action;
+    closedCaptioning?: string;
   }
 > {
   constructor(props: { socket: Socket }) {
@@ -121,9 +123,7 @@ class App extends React.Component<
       this.setMap(_map);
     });
     socket.on('style_tile', ({ tile, mode, announcer, sig }) => {
-      console.log("style tile", tile, mode, announcer);
       if(this.state.tileEventIds.includes(sig)) return;
-      console.log(mode, tile);
       this.setState({
         cursors: this.cursorsArray({
           // todo: retire old cursors
@@ -144,6 +144,8 @@ class App extends React.Component<
           operator: announcer
         })))
       })
+    });
+    socket.on('animate_action', ({ tile, mode, announcer, sig }) => {
     })
     socket.on("characters_info", (response) => {
       this.setCharacters(response);
@@ -158,19 +160,12 @@ class App extends React.Component<
     });
   }
   setAction(action: Action, x: number, y: number): void {
-    const existingPossibles = this.state.cursors.filter(c => c.mode === 'possible-destination');
-    const resetPossibles = this.cursorsArray(existingPossibles.map(p => ({
-      mode: 'clear',
-      operator: this.state.operator,
-      tile: p.tile
-    })))
     const sig = uuid();
     if(this.state.debouncedActionEvaluation) {
       clearTimeout(this.state.debouncedActionEvaluation);
-      console.log("Clearing debounced cursor");
     }
     this.setState({
-      cursors: resetPossibles,
+      cursors: this.omitPossibleDestinations(),
       action: action,
       debouncedActionEvaluation: setTimeout(() => {
         this.props.socket?.emit('action_intention', { x, y, actionId: action.uuid, sig });
@@ -180,6 +175,10 @@ class App extends React.Component<
       }, 50)
     });
   }
+  private omitPossibleDestinations() {
+    return this.state.cursors.filter(cursor => cursor.mode !== 'possible-destination');
+  }
+
   cursorsArray(cursor: any | any[]): any[] {
     const cursors = this.state.cursors;
     switch(cursor.mode || cursors[0].mode) {
@@ -203,12 +202,21 @@ class App extends React.Component<
         return cursors.concat(cursor);
     }
   }
+  actionExecution(action: Action, source: Tile, destination: Tile): void {
+    const sig = uuid();
+    this.props.socket?.emit('action_execution', { actionId: action.uuid, source, destination, sig });
+    this.setState({
+      cursors: this.omitPossibleDestinations(),
+      action: undefined,
+      availableActions: [],
+      closedCaptioning: translate(action.name, this.state.acceptLanguage),
+      sig
+    })
+  }
   communicateTileFocus(x: number, y: number , tile: Tile, mode: string ) {
-    console.log(`Setting tile ${x}, ${y} to ${mode}`);
     const sig = uuid();
     if(this.state.debouncedCursor) {
       clearTimeout(this.state.debouncedCursor);
-      console.log("Clearing debounced cursor");
     }
     this.setState({
       cursors: this.cursorsArray({
@@ -221,7 +229,6 @@ class App extends React.Component<
       tileEventIds: this.state.tileEventIds.concat(sig),
       debouncedCursor: setTimeout(() => {
         if(this.state.sig === sig) {
-          console.log(`tile_interaction ${x}, ${y} ${mode}`);
           this.state.operator?.socket?.emit('tile_interaction', { x, y, mode, sig });
         }
         this.setState({
@@ -269,6 +276,8 @@ class App extends React.Component<
           characters={characters} 
           setAction={this.setAction.bind(this)}
           action={this.state.action}
+          doAction={this.actionExecution.bind(this)}
+          closedCaptioning={this.state.closedCaptioning}
         />
       default:
         return <div>Unknown state</div>

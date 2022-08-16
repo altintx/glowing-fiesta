@@ -1,4 +1,4 @@
-function translate(translations: any, language: string): string {
+export function translate(translations: any, language: string): string {
     if(language in translations) {
       return translations[language];
     }

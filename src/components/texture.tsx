@@ -120,16 +120,17 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
     >
       {map[rowIndex][cellIndex].textures.map((texture, index) =>
         <img
-        className="tile"
-        src={`thethirdsequence/${texture.graphic}512.jpg`}
-        alt={texture.graphic}
-        style={((): React.CSSProperties => {
-          return roundCell(rowIndex, cellIndex, map, {
-            width: tileDimension,
-            height: tileDimension,
-          });
-        })()}
-      />
+          key={`texture-${rowIndex}-${cellIndex}-${index}`}
+          className="tile"
+          src={`thethirdsequence/${texture.graphic}512.jpg`}
+          alt={texture.graphic}
+          style={((): React.CSSProperties => {
+            return roundCell(rowIndex, cellIndex, map, {
+              width: tileDimension,
+              height: tileDimension,
+            });
+          })()}
+        />
     )}
   </div>
 }

@@ -1,0 +1,22 @@
+@keyframes motion {
+    0% {
+        text-shadow: 2px -2px 8px white;
+        transform: skewX(0deg);
+    }
+    25% {
+        text-shadow: -2px 2px 8px white;
+        transform: skewX(-5deg);
+    }
+    75% {
+        text-shadow: 2px -2px 8px white;
+        transform: skewX(2deg);
+    }
+    100% {
+        text-shadow: 2px -2px 8px white;
+        transform: skewX(0deg);
+    }
+}
+.motion {
+    animation-duration: 0.75s;
+    animation-name: motion;
+}

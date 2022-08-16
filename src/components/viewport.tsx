@@ -1,4 +1,5 @@
 import React from 'react';
+import { Caption } from './caption';
 
 export function Viewport({
   children, 
@@ -16,6 +17,7 @@ export function Viewport({
   onMouseMove,
   actionBar,
   boardRef,
+  feedback,
   inspector,
 }: {
   children: React.ReactNode, 
@@ -33,7 +35,8 @@ export function Viewport({
   onGameMenu: () => void,
   actionBar?: React.ReactNode,
   boardRef: React.Ref<HTMLDivElement>,
-  inspector?: React.ReactNode
+  inspector?: React.ReactNode,
+  feedback?: string,
 }) {
   return <div
     style={{ 
@@ -42,6 +45,7 @@ export function Viewport({
       overflow: 'hidden', 
       position: 'relative' 
     }}>
+    {feedback && <Caption>{feedback}</Caption>}
     <div
       ref={boardRef}
       onMouseMove={onMouseMove}

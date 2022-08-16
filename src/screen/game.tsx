@@ -23,6 +23,8 @@ export function Game({
   availableActions,
   setAction,
   action,
+  doAction,
+  closedCaptioning,
 }: {
   setScreen: (screen: string) => void, 
   operator: Operator, 
@@ -36,6 +38,8 @@ export function Game({
   availableActions: any[],
   setAction: (action: any, x: number, y: number) => void,
   action: any,
+  doAction: (action: any, origin: Tile, destination: Tile) => void,
+  closedCaptioning?: string,
 }) {
   const [[x, setX], [y, setY]] = [React.useState(0), React.useState(0)];
   const [zoom, setZoom] = React.useState(1);
@@ -59,7 +63,6 @@ export function Game({
     setRotate((360 + angle + rotate) % 360);
   }
   const setSelectedTile = (tile: Tile, clear = false): void => {
-    // operator?.socket?.emit('tile_interaction', { tile, mode: 'select', operator: operator });
     communicateTileFocus(tile.x, tile.y, map[tile.y][tile.x], clear? 'clear': 'select')
   }
 
@@ -81,6 +84,7 @@ export function Game({
     zoomOutEnabled={zoomOutEnabled}  zoomInEnabled={zoomInEnabled} 
     rotate={rotate} setRotate={rotator} 
     onGameMenu={() => setScreen('gamemenu')}
+    feedback={closedCaptioning}
     actionBar={<>{availableActions && "length" in availableActions && availableActions.map(action => (
       <button onClick={() => selectedTile && setAction(action, selectedTile.tile.x, selectedTile?.tile.y)}><LocalizedString translations={action.name} language={language} /></button>
     ))}</>}
@@ -126,13 +130,14 @@ export function Game({
           const selected = selectedTiles.map(a => a.tile.uuid).includes(cell.uuid);
           const highlight = highlightedTiles.map(a => a.tile.uuid).includes(cell.uuid);
           return ([
-            <CompositeTextureElement cellIndex={cellIndex} rowIndex={rowIndex} tileDimension={tileDimension} map={map} />
+            <CompositeTextureElement key={`background-${cell.uuid}`} cellIndex={cellIndex} rowIndex={rowIndex} tileDimension={tileDimension} map={map} />
           ] as Array<null | ReactElement | JSX.Element>).concat(cell.occupant? 
             (typeof cell.occupant === "string"?
               <img
                 src="marker.png" 
                 className='tile'
-                alt="marker "
+                alt="marker"
+                key={`player-token-${cell.occupant}`}
                 style={{
                   gridColumn: `${cellIndex + 1}`,
                   gridRow: `${rowIndex + 1}`,
@@ -141,7 +146,8 @@ export function Game({
                   rotate: `-${rotate}deg`
                 }}
               /> : <Obstacle
-                {...cell.occupant} 
+                {...cell.occupant}
+                key={`obstacle-${cell.occupant.uuid}`}
                 row={rowIndex + 1}
                 column={cellIndex + 1}
                 tileDimension={tileDimensionInt}
@@ -151,6 +157,7 @@ export function Game({
             // hoverstate
             canSelectTile(cell)? <SelectionTile 
               enabled={hovered}
+              key={`hover-${cell.uuid}`}
               borderColor="rgba(255,255,255,0.5)"
               x={cellIndex + 1}
               y={rowIndex + 1}
@@ -161,6 +168,7 @@ export function Game({
             // selected state
             <SelectionTile 
               enabled={selected}
+              key={`selected-${cell.uuid}`}
               borderColor="rgba(64,255,64,0.5)"
               x={cellIndex + 1}
               y={rowIndex + 1}
@@ -172,12 +180,13 @@ export function Game({
             <SelectionTile
               enabled={highlight}
               tint="#ff0000"
+              key={`aoe-${cell.uuid}`}
               borderColor="rgba(255,255,255,1)"
               x={cellIndex + 1}
               y={rowIndex + 1}
               size={tileDimension}
               borderThrob={hovered && canSubSelectTile(cell)}
-              onClick={() => console.log("should actually do action!!!")}
+              onClick={() => selectedTile && doAction(action, selectedTile.tile, cell)}
             />
             
           ).filter(v => v)
