@@ -122,6 +122,15 @@ class App extends React.Component<
       }
       this.setMap(_map);
     });
+    socket.on('action_done', ({ actionId, sig }) => {
+      if(sig !== this.state.sig) {
+        return;
+      }
+      this.setState({
+        closedCaptioning: undefined,
+        cursors: []
+      });
+    });
     socket.on('style_tile', ({ tile, mode, announcer, sig }) => {
       if(this.state.tileEventIds.includes(sig)) return;
       this.setState({
@@ -204,7 +213,7 @@ class App extends React.Component<
   }
   actionExecution(action: Action, source: Tile, destination: Tile): void {
     const sig = uuid();
-    this.props.socket?.emit('action_execution', { actionId: action.uuid, source, destination, sig });
+    this.props.socket?.emit('action_execution', { actionId: action.uuid, x1: source.x, y1: source.y, x2: destination.x, y2: destination.y, sig });
     this.setState({
       cursors: this.omitPossibleDestinations(),
       action: undefined,
