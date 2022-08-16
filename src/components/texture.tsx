@@ -125,8 +125,6 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
         alt={texture.graphic}
         style={((): React.CSSProperties => {
           return roundCell(rowIndex, cellIndex, map, {
-            gridColumn: `${cellIndex + 1}`,
-            gridRow: `${rowIndex + 1}`,
             width: tileDimension,
             height: tileDimension,
           });
