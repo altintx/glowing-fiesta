@@ -1,3 +1,5 @@
+import React, { useEffect } from 'react';
+import { useRef } from 'react';
 import { Tile, Texture } from '../models/models';
 
 function roundTopLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
@@ -81,6 +83,47 @@ function roundCell(rowIndex: number, columnIndex: number, map: Tile[][], css: Re
   return newCss;
 }
 
+export function AnimationTexture({ graphic, direction, ms, width, height }: { graphic: string, direction: string, ms: number, width: string, height: string }) {
+  const heightInt = parseInt(height);
+  const step = heightInt / (4 + Math.random());
+  const ref = useRef<HTMLImageElement>(null);
+  const [css, setCss] = React.useState<React.CSSProperties>({
+    width: width,
+    height: height,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    opacity: 0.5,
+  });
+  const local = useRef<number>(0 - heightInt);
+  useEffect(() => {
+    setTimeout(() =>
+      setInterval(() => {
+        if (!ref.current) return;
+        switch (direction) {
+          case 'down':
+            if(local.current >= heightInt) {
+              local.current = (0 - heightInt / 2);
+              setCss({
+                ...css,
+                top: `${local.current}px`
+              });
+            } else {
+              local.current = (local.current + step);
+              setCss({
+                ...css,
+                top: `${local.current}px`
+              });
+            }
+            break;
+        }
+      }, 200)
+    , 1500 * Math.random());
+  }, [local]);
+  return <img ref={ref} src={`thethirdsequence/${graphic}.png`} alt={graphic} style={css} />;
+  // TODO: 2 copies of the same graphic would make a smoother animation
+}
+
 export function TextureElement({texture, rowIndex, cellIndex, map, tileDimension}: {texture: Texture, rowIndex: number, cellIndex: number, map: Tile[][], tileDimension: string}) {
   <img
     className="tile"
@@ -98,7 +141,7 @@ export function TextureElement({texture, rowIndex, cellIndex, map, tileDimension
 }
 
 export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimension}: {rowIndex: number, cellIndex: number, map: Tile[][], tileDimension: string}) {
-  let background;
+  let background: string | undefined;
   if(roundTopLeftCell(rowIndex, cellIndex, map) && rowIndex > 0 && cellIndex > 0) {
     background = map[rowIndex - 1][cellIndex - 1].textures[0].graphic;
   } else if(roundTopRightCell(rowIndex, cellIndex, map) && rowIndex > 0 && cellIndex < map[0].length - 1) {
@@ -110,6 +153,8 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
   }
   return <div
     style={{
+      position: 'relative',
+      overflow: 'hidden',
       gridColumn: `${cellIndex + 1}`,
       gridRow: `${rowIndex + 1}`,
       width: tileDimension,
@@ -118,8 +163,8 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
       backgroundSize: background? 'cover': background,
     }}
     >
-      {map[rowIndex][cellIndex].textures.map((texture, index) =>
-        <img
+      {map[rowIndex][cellIndex].textures.map((texture, index) => {
+        let tile = texture.graphic === background? null: <img
           key={`texture-${rowIndex}-${cellIndex}-${index}`}
           className="tile"
           src={`thethirdsequence/${texture.graphic}512.jpg`}
@@ -131,6 +176,7 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
             });
           })()}
         />
-    )}
+        return <>{tile}{texture.animation.map(c => <AnimationTexture width={tileDimension} height={tileDimension} {...c} />)}</>;
+      })}
   </div>
 }

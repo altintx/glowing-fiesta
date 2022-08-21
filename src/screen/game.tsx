@@ -79,6 +79,37 @@ export function Game({
     tile={arrow.tile} 
     occupant={occupant(arrow.tile.occupant)} 
   />)}</>;
+  const updateTileFocus2d = (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+    if(!boardRef.current) return;
+    const [mouseX, mouseY] = [e.clientX, e.clientY];
+    const [transformX, transformY] = [mouseX - x, mouseY - y];
+    let point = new DOMPoint(transformX,transformY);
+    const matrix = new DOMMatrix(window.getComputedStyle(boardRef.current).transform);
+    matrix.invertSelf();
+    point = matrix.transformPoint(point);
+    const [tileX, tileY] = [Math.floor(point.x / tileDimensionInt), Math.floor(point.y / tileDimensionInt)];
+    if(tileY in map && tileX in map[tileY] && !hoverTiles.map(arrow => arrow.tile).includes(map[tileY][tileX])) {
+      communicateTileFocus(tileX, tileY, map[tileY][tileX], 'hover');
+    }
+  }
+  const maybeScroll = (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+    if(!boardRef.current) return;
+    const [mouseX, mouseY] = [e.clientX, e.clientY];
+    if(mouseX < 20 || mouseX > boardRef.current.clientWidth - 20 || mouseY < 20 || mouseY > boardRef.current.clientHeight - 120) {
+      if(mouseX < 20) {
+        setX(x + 20);
+      }
+      if(mouseX > boardRef.current.clientWidth - 20) {
+        setX(x - 20);
+      }
+      if(mouseY < 20) {
+        setY(y + 20);
+      }
+      if(mouseY > boardRef.current.clientHeight - 20) {
+        setY(y - 20);
+      }
+    }
+  }
   return <Viewport 
     x={x} y={y} setX={setX} setY={setY} zoom={zoom} setZoom={setZoom} 
     zoomOutEnabled={zoomOutEnabled}  zoomInEnabled={zoomInEnabled} 
@@ -90,31 +121,8 @@ export function Game({
     ))}</>}
     boardRef={boardRef} inspector={inspector}
     onMouseMove={(e) => {
-      if(!boardRef.current) return;
-      const [mouseX, mouseY] = [e.clientX, e.clientY];
-      const [transformX, transformY] = [mouseX - x, mouseY - y];
-      let point = new DOMPoint(transformX,transformY);
-      const matrix = new DOMMatrix(window.getComputedStyle(boardRef.current).transform);
-      matrix.invertSelf();
-      point = matrix.transformPoint(point);
-      const [tileX, tileY] = [Math.floor(point.x / tileDimensionInt), Math.floor(point.y / tileDimensionInt)];
-      if(tileY in map && tileX in map[tileY] && !hoverTiles.map(arrow => arrow.tile).includes(map[tileY][tileX])) {
-        communicateTileFocus(tileX, tileY, map[tileY][tileX], 'hover');
-      }
-      if(mouseX < 20 || mouseX > boardRef.current.clientWidth - 20 || mouseY < 20 || mouseY > boardRef.current.clientHeight - 20) {
-        if(mouseX < 20) {
-          setX(x + 20);
-        }
-        if(mouseX > boardRef.current.clientWidth - 20) {
-          setX(x - 20);
-        }
-        if(mouseY < 20) {
-          setY(y + 20);
-        }
-        if(mouseY > boardRef.current.clientHeight - 20) {
-          setY(y - 20);
-        }
-      }
+      updateTileFocus2d(e);
+      maybeScroll(e);
     }}>
     <div style={{
       display:'grid',

@@ -6,6 +6,7 @@ export function Obstacle(obstacle: { width: number, height: number, textures: [{
         className='tile'
         style={{
             width: `${obstacle.tileDimension * obstacle.width}px`,
+            zIndex: 100,
             height: `${obstacle.tileDimension * obstacle.height}px`,
             rotate: `-${obstacle.rotate}deg`,
             gridArea: `${obstacle.row} / ${obstacle.column} / ${obstacle.row + (obstacle.height - 1)} span / ${obstacle.column + (obstacle.width - 1)} span`,

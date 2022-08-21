@@ -1,8 +1,13 @@
 import { Socket } from 'socket.io';
+export type AnimationCell = {
+  graphic: string;
+  ms: number;
+  direction: string;
+}
 export type Texture = {
   graphic: string;
   offset: number[];
-  animation: any[];
+  animation: AnimationCell[];
 }
 export type Tile = {
   cover: 'None' | 'Full' | 'Half';
