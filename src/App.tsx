@@ -190,9 +190,9 @@ class App extends React.Component<
 
   cursorsArray(cursor: any | any[]): any[] {
     const cursors = this.state.cursors;
-    switch(cursor.mode || cursors[0].mode) {
+    switch(cursor.mode || cursor[0].mode) {
       case 'select':
-        return cursors.filter(c => c.mode !== 'select').concat(cursor);
+        return cursors.filter(c => c.mode !== 'select').filter(c => c.mode !== 'possible-destination').concat(cursor);
       case 'hover':
         return cursors.filter(c => c.mode !== 'hover').concat(cursor);
       case 'clear':
