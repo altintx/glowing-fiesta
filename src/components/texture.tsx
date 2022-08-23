@@ -103,41 +103,32 @@ function raggedOrthogonalCell(rowIndex: number, columnIndex: number, xOffset: nu
 
 export function AnimationTexture({ graphic, direction, ms, width, height }: { graphic: string, direction: string, ms: number, width: string, height: string }) {
   const heightInt = parseInt(height);
-  const step = heightInt / (4 + Math.random());
-  const [css, setCss] = React.useState<React.CSSProperties>({
+  const ref = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    console.count("useeffect");
+    const initialMarginTop = heightInt + Math.floor(Math.random() * heightInt);
+    console.log(initialMarginTop);
+    ref.current?.animate([
+      { marginTop: `-${initialMarginTop}px`, opacity: 0.3 },
+      { marginTop: 0, opacity: 0.8 },
+    ], {
+      duration: ms,
+      iterations: Infinity,
+    });
+  }, [ms, ref.current]);
+
+  return <div style={{
     width: width,
     height: height,
     position: 'absolute',
     top: 0,
     left: 0,
-    opacity: 0.5,
-  });
-  const local = useRef<number>(0 - heightInt);
-  useEffect(() => {
-    setTimeout(() =>
-      setInterval(() => {
-        switch (direction) {
-          case 'down':
-            if(local.current >= heightInt) {
-              local.current = (0 - heightInt / 2);
-              setCss({
-                ...css,
-                top: `${local.current}px`
-              });
-            } else {
-              local.current = (local.current + step);
-              setCss({
-                ...css,
-                top: `${local.current}px`
-              });
-            }
-            break;
-        }
-      }, 200)
-    , 1500 * Math.random());
-  }, [local]);
-  return <img src={`thethirdsequence/${graphic}.png`} alt={graphic} style={css} />;
-  // TODO: 2 copies of the same graphic would make a smoother animation
+    opacity: 0.2,
+  }} ref={ref}>
+    <img src={`thethirdsequence/${graphic}.png`} alt={graphic} style={{ width: width, height: height }} />
+    <img src={`thethirdsequence/${graphic}.png`} alt={graphic} style={{ width: width, height: height }} />
+  </div>;
 }
 
 export function TextureElement({texture, rowIndex, cellIndex, map, tileDimension}: {texture: Texture, rowIndex: number, cellIndex: number, map: Tile[][], tileDimension: string}) {
