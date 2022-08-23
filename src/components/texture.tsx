@@ -104,7 +104,6 @@ function raggedOrthogonalCell(rowIndex: number, columnIndex: number, xOffset: nu
 export function AnimationTexture({ graphic, direction, ms, width, height }: { graphic: string, direction: string, ms: number, width: string, height: string }) {
   const heightInt = parseInt(height);
   const step = heightInt / (4 + Math.random());
-  const ref = useRef<HTMLImageElement>(null);
   const [css, setCss] = React.useState<React.CSSProperties>({
     width: width,
     height: height,
@@ -117,7 +116,6 @@ export function AnimationTexture({ graphic, direction, ms, width, height }: { gr
   useEffect(() => {
     setTimeout(() =>
       setInterval(() => {
-        if (!ref.current) return;
         switch (direction) {
           case 'down':
             if(local.current >= heightInt) {
@@ -138,7 +136,7 @@ export function AnimationTexture({ graphic, direction, ms, width, height }: { gr
       }, 200)
     , 1500 * Math.random());
   }, [local]);
-  return <img ref={ref} src={`thethirdsequence/${graphic}.png`} alt={graphic} style={css} />;
+  return <img src={`thethirdsequence/${graphic}.png`} alt={graphic} style={css} />;
   // TODO: 2 copies of the same graphic would make a smoother animation
 }
 
