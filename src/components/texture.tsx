@@ -95,6 +95,7 @@ export function AnimationTexture({ graphic, direction, ms, width, height }: { gr
   
   useEffect(() => {
     console.count("useeffect");
+    if("lowperf" in window) return;
     const initialMarginTop = heightInt + Math.floor(Math.random() * heightInt);
     console.log(initialMarginTop);
     ref.current?.animate([

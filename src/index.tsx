@@ -8,6 +8,7 @@ import "./index.css";
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+window['lowperf'] = true;
 var socket = io();
 root.render(
   <React.StrictMode>
