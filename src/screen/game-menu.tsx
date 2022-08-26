@@ -1,4 +1,6 @@
 import React from 'react';
+import { Caption } from '../components/caption';
+import { Menu } from '../components/menu';
 import { Operator } from '../models/models';
 export default function GameMenu({
     operator, 
@@ -15,8 +17,8 @@ export default function GameMenu({
     onFindGame: () => void, 
     onOptions: () => void 
 }) {
-    if(!operator) return <>Loading...</>
-    return <>
+    if(!operator) return <Caption>Loading...</Caption>
+    return <Menu>
         <h1>Game Menu</h1>
         <p>You're logged in as {operator.screenName} </p>
         <ul>
@@ -33,5 +35,5 @@ export default function GameMenu({
                 <button onClick={onLogOut}>Log Out</button>
             </li>
         </ul>
-    </>   
+    </Menu>   
 }

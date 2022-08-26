@@ -112,8 +112,9 @@ export function Game({
       if(mouseY < 20) {
         setY(y + 20);
       }
-      if(mouseY > boardRef.current.clientHeight - 20) {
-        setY(y - 20);
+      if(mouseY > boardRef.current.clientHeight - 50) {
+        console.log(e);
+        setY(y - 50);
       }
     }
   }
