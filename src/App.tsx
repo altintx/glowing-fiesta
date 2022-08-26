@@ -6,6 +6,7 @@ import { Action, Operator, Tile } from './models/models';
 import { Game } from './screen/game';
 import { v4 as uuid } from 'uuid';
 import { translate } from './components/localized-string';
+import { Caption } from './components/caption';
 
 let helloTimeout: NodeJS.Timeout | undefined;
 
@@ -70,7 +71,7 @@ class App extends React.Component<
     this.props.socket?.removeAllListeners();
   }
   bindSocket(socket: Socket) {
-    const accelDebug = true;
+    const accelDebug = false;
     socket.removeAllListeners();
     socket.on("hello", ({language}) => {
       this.setState({ connected: true, acceptLanguage: language });
@@ -248,7 +249,7 @@ class App extends React.Component<
   }
   render() {
     const { screen, gameId, missionId, map, operator, characters, connected, acceptLanguage, cursors } = this.state;
-    if(!connected) return <div>Connecting</div>;
+    if(!connected) return <Caption>Connecting</Caption>;
     const socket = this.props.socket as Socket;
     const setScreen = this.setScreen.bind(this);
     switch(screen) {

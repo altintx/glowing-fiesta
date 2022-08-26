@@ -5,10 +5,14 @@ import reportWebVitals from './reportWebVitals';
 import { io } from 'socket.io-client';
 import "./index.css";
 
+declare global {
+  var highPerf: boolean;
+}
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
-window['lowperf'] = true;
+window['highPerf'] = false;
 var socket = io();
 root.render(
   <React.StrictMode>
