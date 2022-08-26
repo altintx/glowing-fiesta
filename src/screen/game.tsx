@@ -51,6 +51,13 @@ export function Game({
   const hoverTiles = operatorArrows.filter(arrow => arrow.mode === 'hover');
   const selectedTiles = operatorArrows.filter(arrow => arrow.mode === 'select');
   const highlightedTiles = operatorArrows.filter(arrow => arrow.mode === 'possible-destination');
+
+  const shadow: Record<number, string> = {
+    45: "1em 1em 4em black",
+    135: "1em -1em 4em black",
+    225: "-1em -1em 4em black",
+    315: "-1em 1em 4em black",
+  }
   
   const selectedTile = selectedTiles.find(() => true);
   const occupant = (id: Uuid): Character | null => id in characters? characters[id] : null;
@@ -128,6 +135,9 @@ export function Game({
       display:'grid',
       gridAutoColumns: `1fr`,
       gridAutoRows: `1fr`,
+      border: "1em solid #222",
+      borderRadius: "1em",
+      boxShadow: shadow[rotate],
       gap: 0,
       width: `${map[0].length * (tileDimensionInt)}px`,
       height: `${map.length * (tileDimensionInt)}px`,

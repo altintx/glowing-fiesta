@@ -4,9 +4,6 @@ import { Tile, Texture } from '../models/models';
 
 function roundTopLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
   const cell: Tile = map[rowIndex][columnIndex];
-  if ((rowIndex === 0) && (columnIndex === 0)) {
-    return true;
-  }
   if(rowIndex === 0) {
     return false
   }
@@ -20,9 +17,6 @@ function roundTopLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]):
 
 function roundTopRightCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
   const cell: Tile = map[rowIndex][columnIndex];
-  if ((rowIndex === 0) && (columnIndex === map[0].length - 1)) {
-    return true;
-  }
   if(rowIndex === 0) {
     return false
   }
@@ -36,9 +30,6 @@ function roundTopRightCell(rowIndex: number, columnIndex: number, map: Tile[][])
 
 function roundBottomLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
   const cell: Tile = map[rowIndex][columnIndex];
-  if ((rowIndex === map.length - 1) && (columnIndex === 0)) {
-    return true;
-  }
   if(rowIndex === map.length - 1) {
     return false
   }
@@ -52,9 +43,6 @@ function roundBottomLeftCell(rowIndex: number, columnIndex: number, map: Tile[][
 
 function roundBottomRightCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
   const cell: Tile = map[rowIndex][columnIndex];
-  if ((rowIndex === map.length - 1) && (columnIndex === map[map[rowIndex].length - 1].length - 1)) {
-    return true;
-  }
   if(rowIndex === map.length - 1)  {
     return false
   }
