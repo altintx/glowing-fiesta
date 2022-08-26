@@ -31,6 +31,5 @@ Competitive mode is styled like PVP. There is no AI. One human controls the enti
 6. `cd glowing-fiesta`
 7. `yarn`
 8. `DANGEROUSLY_DISABLE_HOST_CHECK=1 yarn start`
-9. You'll get a port conflict because urban-memory is already using `:3000`. Allow the alternate port.
-10. A tab will open and launch into a playfield.
-11. For debug's sake, initial set up is scripted away, but to work on those hidden features set `const accelDebug = false;` in `src/App.tsx:componentDidMount`
+9. A tab will open and launch into a playfield.
+10. For debug's sake, initial set up is scripted away, but to work on those hidden features set `const accelDebug = false;` in `src/App.tsx:componentDidMount`
