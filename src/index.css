@@ -27,7 +27,7 @@ body {
 }
 
 #clouds-background {
-  /* animation: clouds-wind linear infinite 115s; */
+  animation: clouds-wind linear infinite 115s;
   background-image: url(../public/background-clouds.png);
   background-repeat: no-repeat;
   background-size: cover;

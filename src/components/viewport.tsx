@@ -54,6 +54,7 @@ export function Viewport({
         transform:`rotate(${rotate}deg)`, // TODO: perspective(1000px) rotateX(50deg) creates a cool 3d effect on
                                           //       landscape but breaks selection transformations and sprites
         transformOrigin: 'top left',
+        transition: 'transform 0.5s, left 0.25s, top 0.25s',
         left:`${x}px`, 
         top: `${y}px`,
         width: '100%',

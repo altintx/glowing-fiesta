@@ -94,13 +94,11 @@ export function AnimationTexture({ graphic, direction, ms, width, height }: { gr
   const ref = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    console.count("useeffect");
     if(!globalThis.highPerf) return;
     const initialMarginTop = heightInt + Math.floor(Math.random() * heightInt);
-    console.log(initialMarginTop);
     ref.current?.animate([
-      { marginTop: `-${initialMarginTop}px`, opacity: 0.3 },
-      { marginTop: 0, opacity: 0.8 },
+      { paddingTop: `-${initialMarginTop}px`, opacity: 0.3 },
+      { paddingTop: 0, opacity: 0.8 },
     ], {
       duration: ms,
       iterations: Infinity,

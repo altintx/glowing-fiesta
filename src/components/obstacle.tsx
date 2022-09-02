@@ -8,7 +8,7 @@ export function Obstacle(obstacle: { width: number, height: number, textures: [{
             width: `${obstacle.tileDimension * obstacle.width}px`,
             zIndex: 100,
             height: `${obstacle.tileDimension * obstacle.height}px`,
-            rotate: `-${obstacle.rotate}deg`,
+            // rotate: `-${obstacle.rotate}deg`, // this worked well with assets that weren't to perspective but awful with perspective
             gridArea: `${obstacle.row} / ${obstacle.column} / ${obstacle.row + (obstacle.height - 1)} span / ${obstacle.column + (obstacle.width - 1)} span`,
         }}
     />;

@@ -63,11 +63,21 @@ export function Game({
   const occupant = (id: Uuid): Character | null => id in characters? characters[id] : null;
   const rotator = (angle: number): void => {
     if(!(boardRef && boardRef.current)) return;
+    const newAngle = (rotate + 360 + angle) % 360;
+    const oldAngle = (rotate + 360) % 360;
     const width = boardRef.current.clientWidth;
     const height = boardRef.current.clientHeight;
-    setX(width / 2);
-    setY(height / 2);
-    setRotate((360 + angle + rotate) % 360);
+    switch(true) {
+      case(newAngle == 45 && [315,135].includes(oldAngle)):
+        break;
+      case(newAngle == 135 && [45,225].includes(oldAngle)):
+        break;
+      case(newAngle == 225 && [135,315].includes(oldAngle)):
+        break;
+      case(newAngle == 315 && [225,45].includes(oldAngle)):
+        break;
+    }
+    setRotate(angle + rotate);
   }
   const setSelectedTile = (tile: Tile, clear = false): void => {
     communicateTileFocus(tile.x, tile.y, map[tile.y][tile.x], clear? 'clear': 'select')
@@ -112,9 +122,8 @@ export function Game({
       if(mouseY < 20) {
         setY(y + 20);
       }
-      if(mouseY > boardRef.current.clientHeight - 50) {
-        console.log(e);
-        setY(y - 50);
+      if(mouseY > boardRef.current.clientHeight - 20) {
+        setY(y - 20);
       }
     }
   }
@@ -122,7 +131,7 @@ export function Game({
     x={x} y={y} setX={setX} setY={setY} zoom={zoom} setZoom={setZoom} 
     zoomOutEnabled={zoomOutEnabled}  zoomInEnabled={zoomInEnabled} 
     rotate={rotate} setRotate={rotator} 
-    onGameMenu={() => setScreen('gamemenu')}
+    onGameMenu={() => setScreen('loggedinmenu')}
     feedback={closedCaptioning}
     actionBar={<>{availableActions && "length" in availableActions && availableActions.map(action => (
       <button onClick={() => selectedTile && setAction(action, selectedTile.tile.x, selectedTile?.tile.y)}><LocalizedString translations={action.name} language={language} /></button>
