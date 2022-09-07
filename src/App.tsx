@@ -145,10 +145,9 @@ class App extends React.Component<
       });
     });
     socket.on('tile_interaction', ({ tile, tiles, mode, announcer, sig }) => {
+      debugger;
       this.setState({
         cursors: this.cursorsArray((tiles || [tile]).map((t: any) => ({
-          // todo: retire old cursors
-          // special for select
           tile: t,
           mode: mode,
           operator: announcer
@@ -225,27 +224,39 @@ class App extends React.Component<
   }
   communicateTileFocus(x: number, y: number , tile: Tile, mode: string ) {
     const sig = uuid();
-    if(this.state.debouncedCursor) {
-      clearTimeout(this.state.debouncedCursor);
+    const ignore = ['hover'];
+    if(ignore.includes(mode)) {
+      this.setState({
+        cursors: this.cursorsArray({
+          tile,
+          mode,
+          operator: this.state.operator as Operator,
+          sig
+        })
+      });
+    } else {
+      if(this.state.debouncedCursor) {
+        clearTimeout(this.state.debouncedCursor);
+      }
+      this.setState({
+        cursors: this.cursorsArray({
+          tile,
+          mode,
+          operator: this.state.operator as Operator,
+          sig
+        }),
+        sig,
+        tileEventIds: this.state.tileEventIds.concat(sig),
+        debouncedCursor: setTimeout(() => {
+          if(this.state.sig === sig) {
+            this.state.operator?.socket?.emit('tile_interaction', { x, y, mode, sig });
+          }
+          this.setState({
+            debouncedCursor: undefined
+          });
+        }, 50)
+      })
     }
-    this.setState({
-      cursors: this.cursorsArray({
-        tile,
-        mode,
-        operator: this.state.operator as Operator,
-        sig
-      }),
-      sig,
-      tileEventIds: this.state.tileEventIds.concat(sig),
-      debouncedCursor: setTimeout(() => {
-        if(this.state.sig === sig) {
-          this.state.operator?.socket?.emit('tile_interaction', { x, y, mode, sig });
-        }
-        this.setState({
-          debouncedCursor: undefined
-        });
-      }, 50)
-    })
   }
   render() {
     const { screen, gameId, missionId, map, operator, characters, connected, acceptLanguage, cursors } = this.state;
