@@ -12,7 +12,7 @@ let helloTimeout: NodeJS.Timeout | undefined;
 
 // this is the router
 class App extends React.Component<
-  { socket?: Socket },
+  { socket?: Socket, operatorId: string },
   { 
     screen: string, 
     gameId?: string, 
@@ -32,7 +32,7 @@ class App extends React.Component<
     closedCaptioning?: string;
   }
 > {
-  constructor(props: { socket: Socket }) {
+  constructor(props: { socket: Socket, operatorId: string }) {
     super(props);
     this.state = {
       screen: 'mainmenu',
@@ -75,7 +75,7 @@ class App extends React.Component<
     socket.removeAllListeners();
     socket.on("hello", ({language}) => {
       this.setState({ connected: true, acceptLanguage: language });
-      if(accelDebug) socket.emit('login', { name: 'joe' }); 
+      if(accelDebug) socket.emit('login', { name: 'joe', operatorId: this.props.operatorId }); 
     })
     socket.on('you_logged_in', (response) => {
       // todo: response really ought to include the assigned screen name
@@ -145,7 +145,6 @@ class App extends React.Component<
       });
     });
     socket.on('tile_interaction', ({ tile, tiles, mode, announcer, sig }) => {
-      debugger;
       this.setState({
         cursors: this.cursorsArray((tiles || [tile]).map((t: any) => ({
           tile: t,
@@ -266,7 +265,7 @@ class App extends React.Component<
     switch(screen) {
       case 'mainmenu':
         return <MainMenu language={acceptLanguage} login={(screenName) => {
-          socket.emit('login', { name: screenName });
+          socket.emit('login', { name: screenName, operatorId: this.props.operatorId });
           this.setOperator(screenName);
         }} />
       case "loggedinmenu":
