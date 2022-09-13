@@ -65,16 +65,14 @@ export function Game({
     if(!(boardRef && boardRef.current)) return;
     const newAngle = (rotate + 360 + angle) % 360;
     const oldAngle = (rotate + 360) % 360;
-    const width = boardRef.current.clientWidth;
-    const height = boardRef.current.clientHeight;
     switch(true) {
-      case(newAngle == 45 && [315,135].includes(oldAngle)):
+      case(newAngle === 45 && [315,135].includes(oldAngle)):
         break;
-      case(newAngle == 135 && [45,225].includes(oldAngle)):
+      case(newAngle === 135 && [45,225].includes(oldAngle)):
         break;
-      case(newAngle == 225 && [135,315].includes(oldAngle)):
+      case(newAngle === 225 && [135,315].includes(oldAngle)):
         break;
-      case(newAngle == 315 && [225,45].includes(oldAngle)):
+      case(newAngle === 315 && [225,45].includes(oldAngle)):
         break;
     }
     setRotate(angle + rotate);

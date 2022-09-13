@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useRef } from 'react';
-import { Tile, Texture } from '../models/models';
+import { Texture, Tile } from '../models/models';
 
 function roundTopLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
   const cell: Tile = map[rowIndex][columnIndex];
@@ -118,22 +118,6 @@ export function AnimationTexture({ graphic, direction, ms, width, height }: { gr
   </div>;
 }
 
-export function TextureElement({texture, rowIndex, cellIndex, map, tileDimension}: {texture: Texture, rowIndex: number, cellIndex: number, map: Tile[][], tileDimension: string}) {
-  <img
-    className="tile"
-    src={`thethirdsequence/${texture.graphic}512.jpg`}
-    alt={texture.graphic}
-    style={((): React.CSSProperties => {
-      return roundCell(rowIndex, cellIndex, map, {
-        gridColumn: `${cellIndex + 1}`,
-        gridRow: `${rowIndex + 1}`,
-        width: tileDimension,
-        height: tileDimension,
-      });
-    })()}
-  />
-}
-
 export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimension}: {rowIndex: number, cellIndex: number, map: Tile[][], tileDimension: string}) {
   const background = useRef<string | undefined>(undefined);
   const paths = useRef<number[][]>([]);
@@ -206,7 +190,7 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
       backgroundSize: background.current? 'cover': background.current,
     }}
     >
-      {map[rowIndex][cellIndex].textures.map((texture, index) => {
+      {map[rowIndex][cellIndex].textures.map((texture: Texture, index: number) => {
         let tile = texture.graphic === background.current? null: <img
           key={`texture-${rowIndex}-${cellIndex}-${index}`}
           className="tile"

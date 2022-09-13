@@ -12,7 +12,6 @@ export default function MainMenu({ login, language }: { login: (screenName: stri
             login(name);
         }
     }
-    const english = language.substring(0,2) === 'en'; 
     return <Menu>
         <h1><LocalizedString language={language} translations={{ en: "Main Menu" }}/></h1>
         <div style={{

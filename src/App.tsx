@@ -98,12 +98,7 @@ class App extends React.Component<
       if(mission) {
         socket.emit('mission_info');
       } else {
-        if(accelDebug) {
-          return socket.emit("start_next_mission", 0);
-        }
-        if(window.confirm("Start mission?")) {
-          socket.emit("start_next_mission", 0);
-        }
+        socket.emit("start_next_mission", 0);
       }
     });
     socket.on("actions_for_tile", ({ tile, actions, sig }) => {
