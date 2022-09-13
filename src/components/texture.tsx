@@ -103,7 +103,7 @@ export function AnimationTexture({ graphic, direction, ms, width, height }: { gr
       duration: ms,
       iterations: Infinity,
     });
-  }, [ms, ref.current]);
+  }, [ms, heightInt]);
 
   return <div style={{
     width: width,
@@ -176,7 +176,7 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
       }
       return paths;
     } , []);
-  }, []);
+  }, [cellIndex, map, rowIndex]);
 
   return <div
     style={{
