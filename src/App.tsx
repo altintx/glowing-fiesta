@@ -131,6 +131,7 @@ class App extends React.Component<
         closedCaptioning: undefined,
         cursors: []
       });
+      // todo: end turn if no AP remain
     });
     socket.on('style_tile', ({ tile, mode, announcer, sig }) => {
       if(this.state.tileEventIds.includes(sig)) return;
@@ -191,7 +192,7 @@ class App extends React.Component<
     const cursors = this.state.cursors;
     switch(cursor.mode || cursor[0].mode) {
       case 'select':
-        return cursors.filter(c => c.mode !== 'select').filter(c => c.mode !== 'possible-destination').concat(cursor);
+        return cursors.filter(c => !['possible-destination', 'select'].includes(c.mode)).concat(cursor);
       case 'hover':
         return cursors.filter(c => c.mode !== 'hover').concat(cursor);
       case 'clear':
