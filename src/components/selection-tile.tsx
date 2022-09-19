@@ -9,7 +9,7 @@ function parseColor(html: string): number[] {
     ].map(hex => parseInt(hex, 16))
 }
 
-export function SelectionTile({x, y, size, tint, borderColor, borderThrob, onClick, enabled, hover}:{x: number, y: number, size: string, tint?: string, borderColor?: string, borderThrob?: boolean, onClick?: () => void, enabled: boolean, hover?: boolean }): ReactElement<HTMLDivElement>|null {
+export function SelectionTile({x, y, size, tint, borderColor, borderThrob, onClick, enabled, hover, cursor}:{x: number, y: number, size: string, tint?: string, borderColor?: string, borderThrob?: boolean, onClick?: () => void, enabled: boolean, hover?: boolean, cursor?: string }): ReactElement<HTMLDivElement>|null {
     let _opacity = 0;
     let style: CSSProperties = {
         borderWidth: "0.2em",
@@ -19,7 +19,8 @@ export function SelectionTile({x, y, size, tint, borderColor, borderThrob, onCli
         width: size,
         height: size,
         gridColumn: x,
-        gridRow: y
+        gridRow: y,
+        cursor: cursor
     }
     let lighten = false;
     if(typeof tint === "string") {

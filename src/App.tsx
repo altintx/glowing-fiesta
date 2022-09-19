@@ -7,6 +7,8 @@ import { Game } from './screen/game';
 import { v4 as uuid } from 'uuid';
 import { translate } from './components/localized-string';
 import { Caption } from './components/caption';
+import { Games } from './screen/games';
+import { NewGame } from './screen/new-game';
 
 let helloTimeout: NodeJS.Timeout | undefined;
 
@@ -30,6 +32,8 @@ class App extends React.Component<
     debouncedActionEvaluation?: NodeJS.Timeout;
     action?: Action;
     closedCaptioning?: string;
+    publicGames?: any[];
+    campaigns?: any[];
   }
 > {
   constructor(props: { socket: Socket, operatorId: string }) {
@@ -154,6 +158,12 @@ class App extends React.Component<
     socket.on("characters_info", (response) => {
       this.setCharacters(response);
     });
+    socket.on("games_list", (response) => {
+      this.setState({ publicGames: response });
+    });
+    socket.on("list_campaigns", (response) => {
+      this.setState({ campaigns: response });
+    })
   }
   setOperator(name: string) {
     this.setState({ 
@@ -254,7 +264,7 @@ class App extends React.Component<
     }
   }
   render() {
-    const { screen, gameId, missionId, map, operator, characters, connected, acceptLanguage, cursors } = this.state;
+    const { screen, gameId, missionId, map, operator, characters, connected, acceptLanguage, cursors, publicGames, campaigns } = this.state;
     if(!connected) return <Caption>Connecting</Caption>;
     const socket = this.props.socket as Socket;
     const setScreen = this.setScreen.bind(this);
@@ -268,16 +278,41 @@ class App extends React.Component<
         return <GameMenu 
           language={acceptLanguage}
           operator={operator as Operator}
-          onNewGame={() => socket.emit('new_game')}
+          onNewGame={() => {
+            socket.emit('list_campaigns');
+            this.setScreen('new_game');
+          }}
           onLogOut={() => {
             this.setScreen("mainmenu");
             this.setState({ operator: undefined });
           }}
           onFindGame={() => {
+            socket.emit('list_games');
+            setScreen("list_games");
           }}
           onOptions={() => {
           }}
         />
+      case "new_game":
+        return <NewGame 
+          language={acceptLanguage}
+          onBack={() => setScreen("loggedinmenu")}
+          onNewGame={(campaignId: string, publicGame: boolean) => {
+            socket.emit('new_game', {
+              campaignId,
+              publicGame
+            });
+          }}
+          campaigns={campaigns}
+        />;
+      case "list_games":
+        return <Games
+          language={acceptLanguage}
+          games={publicGames}
+          onBack={() => setScreen("loggedinmenu")}
+          connect={(gameId) => {
+
+          }} />
       case "game":
         return <Game 
           language={acceptLanguage}

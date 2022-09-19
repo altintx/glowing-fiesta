@@ -12,7 +12,7 @@ export default function MainMenu({ login, language }: { login: (screenName: stri
             login(name);
         }
     }
-    return <Menu>
+    return <Menu className="spacing-2">
         <h1><LocalizedString language={language} translations={{ en: "Main Menu" }}/></h1>
         <div style={{
             display: "flex",

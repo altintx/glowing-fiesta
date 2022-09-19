@@ -131,9 +131,6 @@ export function Game({
     rotate={rotate} setRotate={rotator} 
     onGameMenu={() => setScreen('loggedinmenu')}
     feedback={closedCaptioning}
-    actionBar={<>{availableActions && "length" in availableActions && availableActions.map(action => (
-      <button onClick={() => selectedTile && setAction(action, selectedTile.tile.x, selectedTile?.tile.y)}><LocalizedString translations={action.name} language={language} /></button>
-    ))}</>}
     boardRef={boardRef} inspector={inspector}
     onMouseMove={(e) => {
       updateTileFocus2d(e);
@@ -209,11 +206,38 @@ export function Game({
               key={`aoe-${cell.uuid}`}
               borderColor="rgba(255,255,255,1)"
               x={cellIndex + 1}
+              cursor={action && selected && action.cursor}
               y={rowIndex + 1}
               size={tileDimension}
               borderThrob={hovered && canSubSelectTile(cell)}
               onClick={() => selectedTile && doAction(action, selectedTile.tile, cell)}
-            />
+            />,
+
+            selected && availableActions && "length" in availableActions? <div 
+              style={{
+                position:'absolute',
+                rotate: '-45deg',
+                width: `${tileDimensionInt}px`,
+                top: `${(rowIndex) * tileDimensionInt - tileDimensionInt / 2}px`,
+                left: `${(cellIndex + 3/2) * tileDimensionInt - tileDimensionInt / 2}px`,
+                zIndex: 1000,
+              }}
+            ><div style={{position: 'relative'}}>{availableActions.map((action, index) => (
+              <button
+                style={{
+                  width: '100%',
+                  position: 'absolute',
+                  height: '2em',
+                  overflow: 'hidden',
+                  top: `${index*2}em`
+                }}
+                onClick={() => selectedTile && setAction(action, selectedTile.tile.x, selectedTile.tile.y)}
+                ><LocalizedString
+                  translations={action.name}
+                  language={language}
+                />
+              </button>
+            ))}</div></div>: null
             
           ).filter(v => v)
         })

@@ -18,7 +18,7 @@ export default function GameMenu({
     onOptions: () => void 
 }) {
     if(!operator) return <Caption>Loading...</Caption>
-    return <Menu>
+    return <Menu className="spacing-2">
         <h1>Game Menu</h1>
         <p>You're logged in as {operator.screenName} </p>
         <ul>
