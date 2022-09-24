@@ -6,6 +6,7 @@ import { Obstacle } from "../components/obstacle";
 import { SelectionTile } from "../components/selection-tile";
 import { LocalizedString } from "../components/localized-string";
 import { CompositeTextureElement } from "../components/texture";
+import { RadioButton } from "../components/radio-button";
 
 function isPlayer(occupant: Character | null): boolean {
   return occupant?.faction === 0;
@@ -34,7 +35,7 @@ export function Game({
   characters: Record<Uuid, Character>,
   language: string,
   operatorArrows: OperatorArrows[],
-  communicateTileFocus: (x: number, y: number, tile: Tile, mode: string) => void,
+  communicateTileFocus: (x: number, y: number, tile: Tile | null, mode: string) => void,
   availableActions: any[],
   setAction: (action: any, x: number, y: number) => void,
   action: any,
@@ -51,6 +52,7 @@ export function Game({
   const hoverTiles = operatorArrows.filter(arrow => arrow.mode === 'hover');
   const selectedTiles = operatorArrows.filter(arrow => arrow.mode === 'select');
   const highlightedTiles = operatorArrows.filter(arrow => arrow.mode === 'possible-destination');
+  const propsAction = action;
 
   const shadow: Record<number, string> = {
     45: "1em 1em 4em black",
@@ -222,8 +224,16 @@ export function Game({
                 left: `${(cellIndex + 3/2) * tileDimensionInt - tileDimensionInt / 2}px`,
                 zIndex: 1000,
               }}
-            ><div style={{position: 'relative'}}>{availableActions.map((action, index) => (
-              <button
+            ><div
+              style={{position: 'relative'}}
+              onMouseMove={e => {
+                e.stopPropagation();
+                communicateTileFocus(-1, -1, null, 'hover');
+              }}
+            >{availableActions.map((action, index) => (
+              <RadioButton
+                selectedValue={propsAction}
+                value={action}
                 style={{
                   width: '100%',
                   position: 'absolute',
@@ -231,12 +241,15 @@ export function Game({
                   overflow: 'hidden',
                   top: `${index*2}em`
                 }}
-                onClick={() => selectedTile && setAction(action, selectedTile.tile.x, selectedTile.tile.y)}
+                onClick={(e) => {
+                  selectedTile && setAction(action, selectedTile.tile.x, selectedTile.tile.y);
+                  e.preventDefault();
+                }}
                 ><LocalizedString
                   translations={action.name}
                   language={language}
                 />
-              </button>
+              </RadioButton>
             ))}</div></div>: null
             
           ).filter(v => v)
