@@ -232,8 +232,8 @@ export function Game({
               }}
             >{availableActions.map((action, index) => (
               <RadioButton
-                selectedValue={propsAction}
-                value={action}
+                selectedValue={propsAction?.uuid}
+                value={action.uuid}
                 style={{
                   width: '100%',
                   position: 'absolute',
@@ -244,6 +244,7 @@ export function Game({
                 onClick={(e) => {
                   selectedTile && setAction(action, selectedTile.tile.x, selectedTile.tile.y);
                   e.preventDefault();
+                  e.stopPropagation();
                 }}
                 ><LocalizedString
                   translations={action.name}
