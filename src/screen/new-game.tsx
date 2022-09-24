@@ -6,6 +6,9 @@ import { RadioButton } from "../components/radio-button";
 export function NewGame({ campaigns, onNewGame, language, onBack }: { campaigns?: any[], onNewGame: (campaignId: string, publiclyAvailable: boolean) => void, language: string, onBack: () => void }): React.ReactElement {
   const [selectedCampaign, setCampaign] = useState<any>(undefined);
   const [publiclyAvailable, setPubliclyAvailable] = useState(false);
+  if(!selectedCampaign && campaigns?.length) {
+    setCampaign(campaigns[0]);
+  }
   return <Menu className="spacing-2" style={{
     display: "flex"
   }}>
