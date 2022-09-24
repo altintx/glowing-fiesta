@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { LocalizedString } from "../components/localized-string";
 import { Menu } from "../components/menu";
+import { RadioButton } from "../components/radio-button";
 
 export function NewGame({ campaigns, onNewGame, language, onBack }: { campaigns?: any[], onNewGame: (campaignId: string, publiclyAvailable: boolean) => void, language: string, onBack: () => void }): React.ReactElement {
   const [selectedCampaign, setCampaign] = useState<any>(undefined);
@@ -17,9 +18,9 @@ export function NewGame({ campaigns, onNewGame, language, onBack }: { campaigns?
         {campaigns && campaigns.length > 0 && <form onSubmit={e => e.preventDefault()}>
             <ul>
                 {campaigns.map(campaign => <li key={campaign.id}>
-                    <button onClick={() => setCampaign(campaign)}>
+                    <RadioButton selectedValue={selectedCampaign?.campaignId} value={campaign?.campaignId} onClick={() => setCampaign(campaign)}>
                         <LocalizedString language={language} translations={campaign.name} />
-                    </button>
+                    </RadioButton>
                 </li>)}
             </ul>
             <div className="form-group">
