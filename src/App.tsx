@@ -153,6 +153,11 @@ class App extends React.Component<
         })), prevState.cursors)
       }))
     });
+    socket.on('action_intention', action => {
+      this.setState({
+        action: action
+      })
+    })
     socket.on('animate_action', ({ tile, mode, announcer, sig }) => {
     })
     socket.on("characters_info", (response) => {
