@@ -134,24 +134,24 @@ class App extends React.Component<
     });
     socket.on('style_tile', ({ tile, mode, announcer, sig }) => {
       if(this.state.tileEventIds.includes(sig)) return;
-      this.setState({
+      this.setState(prevState => ({
+        ...prevState,
         cursors: this.cursorsArray({
-          // todo: retire old cursors
-          // special for select
           tile: tile,
           mode: mode,
           operator: announcer
         })
-      });
+      }));
     });
     socket.on('tile_interaction', ({ tile, tiles, mode, announcer, sig }) => {
-      this.setState({
+      this.setState(prevState => ({
+        ...prevState,
         cursors: this.cursorsArray((tiles || [tile]).map((t: any) => ({
           tile: t,
           mode: mode,
           operator: announcer
-        })))
-      })
+        })), prevState.cursors)
+      }))
     });
     socket.on('animate_action', ({ tile, mode, announcer, sig }) => {
     })
@@ -193,27 +193,27 @@ class App extends React.Component<
     return this.state.cursors.filter(cursor => cursor.mode !== 'possible-destination');
   }
 
-  cursorsArray(cursor: any | any[]): any[] {
-    const cursors = this.state.cursors;
+  cursorsArray(cursor: any | any[], cursors = this.state.cursors): any[] {
+    const tileExists = (cursor: any) => cursor.tile;
     switch(cursor.mode || cursor[0].mode) {
       case 'select':
-        return cursors.filter(c => !['possible-destination', 'select'].includes(c.mode)).concat(cursor);
+        return cursors.filter(c => !['possible-destination', 'select'].includes(c.mode)).concat(cursor).filter(tileExists);
       case 'hover':
-        return cursors.filter(c => c.mode !== 'hover').concat(cursor);
+        return cursors.filter(c => c.mode !== 'hover').concat(cursor).filter(tileExists);
       case 'clear':
         if(Array.isArray(cursor)) {
-          return cursors.filter(c => !(cursor.map(c => c.tile.uuid).includes(c.tile.uuid)));
+          return cursors.filter(c => !(cursor.map(c => c.tile.uuid).includes(c.tile.uuid))).filter(tileExists);
         } else {
-          return cursors.filter(c => c.tile.uuid !== cursor.tile.uuid);
+          return cursors.filter(c => c.tile.uuid !== cursor.tile.uuid).filter(tileExists);
         }
       case 'possible-destination':
         if('length' in cursor) {
-          return cursors.filter(c => c.mode !== 'possible-destination').concat(cursor);
+          return cursors.filter(c => c.mode !== 'possible-destination').concat(cursor).filter(tileExists);
         } else {
-          return cursors.concat(cursor);
+          return cursors.concat(cursor).filter(tileExists);
         }
       default:
-        return cursors.concat(cursor);
+        return cursors.concat(cursor).filter(tileExists);
     }
   }
   actionExecution(action: Action, source: Tile, destination: Tile): void {
@@ -227,7 +227,7 @@ class App extends React.Component<
       sig
     })
   }
-  communicateTileFocus(x: number, y: number , tile: Tile, mode: string ) {
+  communicateTileFocus(x: number, y: number , tile: Tile | null, mode: string ) {
     const sig = uuid();
     const ignore = ['hover'];
     if(ignore.includes(mode)) {
