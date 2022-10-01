@@ -23,13 +23,13 @@ Competitive mode is styled like PVP. There is no AI. One human controls the enti
 
 ## Running
 
-1. Clone both repos.
-2. I think it's easiest to start with urban-memory
-3. `cd urban-memory`
-4. `yarn`
-5. `yarn serve`
-6. `cd glowing-fiesta`
-7. `yarn`
-8. `DANGEROUSLY_DISABLE_HOST_CHECK=1 yarn start`
-9. A tab will open and launch into a playfield.
-10. For debug's sake, initial set up is scripted away, but to work on those hidden features set `const accelDebug = false;` in `src/App.tsx:componentDidMount`
+You can run in docker (easiest) or locally.
+
+To use docker, follow the instructions in [glowing-fiesta-installer](https://github.com/altintx/glowing-fiesta-installer).
+
+To run locally
+
+1. `yarn`
+2. `yarn start`
+3. A tab will open and launch into a playfield.
+4. For debug's sake, initial set up is scripted away, but to work on those hidden features set `const accelDebug = false;` in `src/App.tsx:componentDidMount`
