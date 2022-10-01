@@ -1,6 +1,6 @@
 import React from 'react';
 import MainMenu from './screen/main-menu';
-import { Socket } from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
 import GameMenu from './screen/game-menu';
 import { Action, Operator, Tile } from './models/models';
 import { Game } from './screen/game';
@@ -14,7 +14,7 @@ let helloTimeout: NodeJS.Timeout | undefined;
 
 // this is the router
 class App extends React.Component<
-  { socket?: Socket, operatorId: string },
+  {  },
   { 
     screen: string, 
     gameId?: string, 
@@ -34,9 +34,11 @@ class App extends React.Component<
     closedCaptioning?: string;
     publicGames?: any[];
     campaigns?: any[];
+    socket: Socket;
   }
 > {
-  constructor(props: { socket: Socket, operatorId: string }) {
+  constructor(props: {}) {
+    if(!process.env["REACT_APP_PROXY_HOST"]) throw new Error("REACT_APP_PROXY_HOST is undefined");
     super(props);
     this.state = {
       screen: 'mainmenu',
@@ -48,10 +50,22 @@ class App extends React.Component<
       tileEventIds: [],
       sig: uuid(),
       availableActions: [],
+      socket: io(process.env["REACT_APP_PROXY_HOST"] as string, {
+        auth: {
+          token: this.operatorId()
+        }
+      }).compress(false)
     }
-    this.bindSocket(props.socket);
+    this.bindSocket(this.state.socket);
     clearTimeout(helloTimeout);
-    helloTimeout = setTimeout(() => props.socket.emit("hello"), 1000);
+    helloTimeout = setTimeout(() => this.state.socket.emit("hello"), 1000);
+  }
+  operatorId() {
+    const cached = window.localStorage.getItem('operatorId');
+    if(cached) return cached;
+    const newOperatorId = uuid();
+    window.localStorage.setItem('operatorId', newOperatorId);
+    return newOperatorId;
   }
   setScreen(screen: string) {
     this.setState({ screen });
@@ -72,14 +86,14 @@ class App extends React.Component<
     }, {})});
   }
   componentWillUnmount() {
-    this.props.socket?.removeAllListeners();
+    this.state.socket?.removeAllListeners();
   }
   bindSocket(socket: Socket) {
     const accelDebug = false;
     socket.removeAllListeners();
     socket.on("hello", ({language}) => {
       this.setState({ connected: true, acceptLanguage: language });
-      if(accelDebug) socket.emit('login', { name: 'joe', operatorId: this.props.operatorId }); 
+      if(accelDebug) socket.emit('login', { name: 'joe', operatorId: this.operatorId() }); 
     })
     socket.on('you_logged_in', (response) => {
       // todo: response really ought to include the assigned screen name
@@ -174,7 +188,7 @@ class App extends React.Component<
     this.setState({ 
       operator: name? {
         screenName: name,
-        socket: this.props.socket
+        socket: this.state.socket as unknown
       } as Operator : undefined
     });
   }
@@ -187,7 +201,7 @@ class App extends React.Component<
       cursors: this.omitPossibleDestinations(),
       action: action,
       debouncedActionEvaluation: setTimeout(() => {
-        this.props.socket?.emit('action_intention', { x, y, actionId: action.uuid, sig });
+        this.state.socket?.emit('action_intention', { x, y, actionId: action.uuid, sig });
         this.setState({
           debouncedActionEvaluation: undefined
         });
@@ -223,7 +237,7 @@ class App extends React.Component<
   }
   actionExecution(action: Action, source: Tile, destination: Tile): void {
     const sig = uuid();
-    this.props.socket?.emit('action_execution', { actionId: action.uuid, x1: source.x, y1: source.y, x2: destination.x, y2: destination.y, sig });
+    this.state.socket?.emit('action_execution', { actionId: action.uuid, x1: source.x, y1: source.y, x2: destination.x, y2: destination.y, sig });
     this.setState({
       cursors: this.omitPossibleDestinations(),
       action: undefined,
@@ -271,12 +285,12 @@ class App extends React.Component<
   render() {
     const { screen, gameId, missionId, map, operator, characters, connected, acceptLanguage, cursors, publicGames, campaigns } = this.state;
     if(!connected) return <Caption>Connecting</Caption>;
-    const socket = this.props.socket as Socket;
+    const socket = this.state.socket as Socket;
     const setScreen = this.setScreen.bind(this);
     switch(screen) {
       case 'mainmenu':
         return <MainMenu language={acceptLanguage} login={(screenName) => {
-          socket.emit('login', { name: screenName, operatorId: this.props.operatorId });
+          socket.emit('login', { name: screenName, operatorId: this.operatorId() });
           this.setOperator(screenName);
         }} />
       case "loggedinmenu":

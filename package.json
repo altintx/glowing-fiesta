@@ -1,5 +1,5 @@
 {
-  "name": "canvas-client",
+  "name": "glowing-fiesta",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -11,6 +11,7 @@
     "@types/node": "^16.11.43",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
+    "detect-it": "^4.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-localstorage-hook": "^0.1.0",

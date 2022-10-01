@@ -2,9 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { io } from 'socket.io-client';
 import "./index.css";
-import { v4 as uuid } from 'uuid';
 
 declare global {
   var highPerf: boolean;
@@ -14,11 +12,9 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 window['highPerf'] = false;
-const operatorId = uuid();
-var socket = io();
 root.render(
   <React.StrictMode>
-    <App socket={socket} operatorId={operatorId} />
+    <App />
   </React.StrictMode>
 );
 

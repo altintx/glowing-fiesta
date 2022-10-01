@@ -15,8 +15,8 @@ export function TileInspector({
   const [side, setSide] = React.useState("right");
   return <div style={{
     position:'absolute', 
-    bottom: 0, 
-    [side]: 0, 
+    bottom: "20px", 
+    [side]: "20px", 
     textAlign: 'right', 
     width: '15em',
     height:'15em', 

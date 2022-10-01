@@ -9,12 +9,19 @@ function parseColor(html: string): number[] {
     ].map(hex => parseInt(hex, 16))
 }
 
-export function SelectionTile({x, y, size, tint, borderColor, borderThrob, onClick, enabled, hover, cursor}:{x: number, y: number, size: string, tint?: string, borderColor?: string, borderThrob?: boolean, onClick?: () => void, enabled: boolean, hover?: boolean, cursor?: string }): ReactElement<HTMLDivElement>|null {
+export function SelectionTile({x, y, size, tint, borderColor, borderThrob, onClick, enabled, hover, cursor,zoom}:{x: number, y: number, size: string, tint?: string, borderColor?: string, borderThrob?: boolean, onClick?: () => void, enabled: boolean, hover?: boolean, cursor?: string, zoom?: number }): ReactElement<HTMLDivElement>|null {
     let _opacity = 0;
+    const _radiuses: { [key: string]: string } = {
+        "-1": "4px",
+        "0": "8px",
+        "1": "12px",
+        "2": "16px",
+        "3": "20px" 
+    }
     let style: CSSProperties = {
         borderWidth: "0.2em",
         borderStyle: "solid",
-        borderRadius: "1em",
+        borderRadius: zoom === undefined? "1em": _radiuses[zoom.toString()],
         boxSizing: "border-box",
         width: size,
         height: size,

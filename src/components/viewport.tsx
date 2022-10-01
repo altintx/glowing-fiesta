@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Caption } from './caption';
+import { primaryInput } from 'detect-it';
+import { RadioButton } from './radio-button';
+
+const offsetSize = (isTouch: boolean) => isTouch ? "20px": 0;
 
 export function Viewport({
   children, 
@@ -19,6 +23,7 @@ export function Viewport({
   boardRef,
   feedback,
   inspector,
+  floats,
 }: {
   children: React.ReactNode, 
   x: number, 
@@ -36,8 +41,11 @@ export function Viewport({
   actionBar?: React.ReactNode,
   boardRef: React.Ref<HTMLDivElement>,
   inspector?: React.ReactNode,
+  floats?: React.ReactNode[],
   feedback?: string,
 }) {
+  const [isTouch, setIsTouch] = useState(primaryInput === 'touch');
+  const offset = offsetSize(isTouch);
   return <div
     style={{ 
       width: '100%', 
@@ -61,22 +69,22 @@ export function Viewport({
         height: '100%',
         position:'absolute'
     }}>{children}</div>
+    {isTouch && <button style={{position:"absolute",left:0,width:"20px",bottom:0,top:0,zIndex:10000}} onClick={() => setX(x + 32)}> </button>}
+    {isTouch && <button style={{position:"absolute",left:0,top:0,right:0,height:"20px",zIndex:10000}} onClick={() => setY(y + 32)}> </button>}
+    {isTouch && <button style={{position:"absolute",left:0,bottom:0,right:0,height:"20px",zIndex:10000}} onClick={() => setY(y - 32)}> </button>}
+    {isTouch && <button style={{position:"absolute",top:0,right:0,bottom:0,width:"20px",zIndex:10000}} onClick={() => setX(x - 32)}> </button>}
     {actionBar && <div style={{
         bottom: 0,
         position: 'absolute',
         zIndex: 1000
       }}>{actionBar}</div>}
     {inspector}
-    <div style={{position:"absolute",bottom:0,right:0,zIndex:1000}}>
+    {floats}
+    <div style={{position:"absolute",bottom:offset,right:offset,zIndex:1000}}>
       <button onClick={onGameMenu}>Menu</button>
-      <button onClick={() => setRotate(-90)}>Rotate Left</button>
-      <button onClick={() => setX(x + 32)}>Left</button>
-      <button onClick={() => setY(y + 32)}>Up</button>
-      <button onClick={() => setY(y - 32)}>Down</button>
+      <RadioButton selectedValue="touch" value={isTouch? "touch": "mouse"} onClick={() => setIsTouch(!isTouch)}>Touch Controls</RadioButton>
       <button disabled={!zoomInEnabled} onClick={() => setZoom(zoom + 1)}>Z In</button>
       <button disabled={!zoomOutEnabled} onClick={() => setZoom(zoom -1)}>Z Out</button>
-      <button onClick={() => setX(x - 32)}>Right</button>
-      <button onClick={() => setRotate(90)}>Rotate Right</button>
     </div>
   </div>;
 }

@@ -134,6 +134,47 @@ export function Game({
     onGameMenu={() => setScreen('loggedinmenu')}
     feedback={closedCaptioning}
     boardRef={boardRef} inspector={inspector}
+    floats={[
+      selectedTiles.length && availableActions && "length" in availableActions?
+        <div 
+          style={{
+            position:'absolute',
+            width: `16em`,
+            top: `${(selectedTiles[0].tile.y) * tileDimensionInt - tileDimensionInt / 2}px`,
+            left: `${(selectedTiles[0].tile.x + 3/2) * tileDimensionInt - tileDimensionInt / 2}px`,
+            zIndex: 1000,
+          }}
+        ><div
+          style={{position: 'relative'}}
+          onMouseMove={e => {
+            e.stopPropagation();
+            communicateTileFocus(-1, -1, null, 'hover');
+          }}
+        >{availableActions.map((action, index) => (
+          <RadioButton
+            selectedValue={propsAction?.uuid}
+            value={action.uuid}
+            style={{
+              width: '100%',
+              position: 'absolute',
+              height: '2em',
+              overflow: 'hidden',
+              top: `${index*2}em`
+            }}
+            onClick={(e) => {
+              selectedTile && setAction(action, selectedTile.tile.x, selectedTile.tile.y);
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            ><LocalizedString
+              translations={action.name}
+              language={language}
+            />
+          </RadioButton>
+        ))}</div></div>
+      :
+        null
+    ]}
     onMouseMove={(e) => {
       updateTileFocus2d(e);
       maybeScroll(e);
@@ -211,48 +252,10 @@ export function Game({
               cursor={action && selected && action.cursor}
               y={rowIndex + 1}
               size={tileDimension}
+              zoom={zoom}
               borderThrob={hovered && canSubSelectTile(cell)}
               onClick={() => selectedTile && doAction(action, selectedTile.tile, cell)}
             />,
-
-            selected && availableActions && "length" in availableActions? <div 
-              style={{
-                position:'absolute',
-                rotate: '-45deg',
-                width: `${tileDimensionInt}px`,
-                top: `${(rowIndex) * tileDimensionInt - tileDimensionInt / 2}px`,
-                left: `${(cellIndex + 3/2) * tileDimensionInt - tileDimensionInt / 2}px`,
-                zIndex: 1000,
-              }}
-            ><div
-              style={{position: 'relative'}}
-              onMouseMove={e => {
-                e.stopPropagation();
-                communicateTileFocus(-1, -1, null, 'hover');
-              }}
-            >{availableActions.map((action, index) => (
-              <RadioButton
-                selectedValue={propsAction?.uuid}
-                value={action.uuid}
-                style={{
-                  width: '100%',
-                  position: 'absolute',
-                  height: '2em',
-                  overflow: 'hidden',
-                  top: `${index*2}em`
-                }}
-                onClick={(e) => {
-                  selectedTile && setAction(action, selectedTile.tile.x, selectedTile.tile.y);
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-                ><LocalizedString
-                  translations={action.name}
-                  language={language}
-                />
-              </RadioButton>
-            ))}</div></div>: null
-            
           ).filter(v => v)
         })
       )}
