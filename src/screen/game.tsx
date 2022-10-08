@@ -7,6 +7,7 @@ import { SelectionTile } from "../components/selection-tile";
 import { LocalizedString } from "../components/localized-string";
 import { CompositeTextureElement } from "../components/texture";
 import { RadioButton } from "../components/radio-button";
+import { Map } from "../components/map";
 
 function isPlayer(occupant: Character | null): boolean {
   return occupant?.faction === 0;
@@ -179,86 +180,71 @@ export function Game({
       updateTileFocus2d(e);
       maybeScroll(e);
     }}>
-    <div style={{
-      display:'grid',
-      gridAutoColumns: `1fr`,
-      gridAutoRows: `1fr`,
-      border: "1em solid #222",
-      borderRadius: "1em",
-      boxShadow: shadow[rotate],
-      gap: 0,
-      width: `${map[0].length * (tileDimensionInt)}px`,
-      height: `${map.length * (tileDimensionInt)}px`,
-    }}>
-      {map.map((row, rowIndex) =>
-        row.map((cell, cellIndex) => {
-          const hovered = hoverTiles.map(a => a.tile.uuid).includes(cell.uuid);
-          const selected = selectedTiles.map(a => a.tile.uuid).includes(cell.uuid);
-          const highlight = highlightedTiles.map(a => a.tile.uuid).includes(cell.uuid);
-          return ([
-            <CompositeTextureElement key={`background-${cell.uuid}`} cellIndex={cellIndex} rowIndex={rowIndex} tileDimension={tileDimension} map={map} />
-          ] as Array<null | ReactElement | JSX.Element>).concat(cell.occupant? 
-            (typeof cell.occupant === "string"?
-              <img
-                src="marker.png" 
-                className='tile'
-                alt="marker"
-                key={`player-token-${cell.occupant}`}
-                style={{
-                  gridColumn: `${cellIndex + 1}`,
-                  gridRow: `${rowIndex + 1}`,
-                  width: tileDimension,
-                  height: tileDimension,
-                  rotate: `-${rotate}deg`
-                }}
-              /> : <Obstacle
-                {...cell.occupant}
-                key={`obstacle-${cell.occupant.uuid}`}
-                row={rowIndex + 1}
-                column={cellIndex + 1}
-                tileDimension={tileDimensionInt}
-                rotate={rotate}
-              />) : null,
+    <Map map={map} tileDimensionInt={tileDimensionInt} augments={(cellIndex: number, rowIndex: number, cell: Tile): Array<null | ReactElement | JSX.Element> => {
+      const hovered = hoverTiles.map(a => a.tile.uuid).includes(cell.uuid);
+      const selected = selectedTiles.map(a => a.tile.uuid).includes(cell.uuid);
+      const highlight = highlightedTiles.map(a => a.tile.uuid).includes(cell.uuid);
+      
+      return ([] as Array<null | ReactElement | JSX.Element>).concat(cell.occupant? 
+        (typeof cell.occupant === "string"?
+          <img
+            src="marker.png" 
+            className='tile'
+            alt="marker"
+            key={`player-token-${cell.occupant}`}
+            style={{
+              gridColumn: `${cellIndex + 1}`,
+              gridRow: `${rowIndex + 1}`,
+              width: tileDimension,
+              height: tileDimension,
+              rotate: `-${rotate}deg`
+            }}
+          /> : <Obstacle
+            {...cell.occupant}
+            key={`obstacle-${cell.occupant.uuid}`}
+            row={rowIndex + 1}
+            column={cellIndex + 1}
+            tileDimension={tileDimensionInt}
+            rotate={rotate}
+          />) : null,
 
-            // hoverstate
-            canSelectTile(cell)? <SelectionTile 
-              enabled={hovered}
-              key={`hover-${cell.uuid}`}
-              borderColor="rgba(255,255,255,0.5)"
-              x={cellIndex + 1}
-              y={rowIndex + 1}
-              size={tileDimension}
-              borderThrob={true}
-              onClick={() => setSelectedTile(cell)}
-            />: null,
-            // selected state
-            <SelectionTile 
-              enabled={selected}
-              key={`selected-${cell.uuid}`}
-              borderColor="rgba(64,255,64,0.5)"
-              x={cellIndex + 1}
-              y={rowIndex + 1}
-              size={tileDimension}
-              borderThrob={true}
-              onClick={() => setSelectedTile(cell, true)}
-            />,
+        // hoverstate
+        canSelectTile(cell)? <SelectionTile 
+          enabled={hovered}
+          key={`hover-${cell.uuid}`}
+          borderColor="rgba(255,255,255,0.5)"
+          x={cellIndex + 1}
+          y={rowIndex + 1}
+          size={tileDimension}
+          borderThrob={true}
+          onClick={() => setSelectedTile(cell)}
+        />: null,
+        // selected state
+        <SelectionTile 
+          enabled={selected}
+          key={`selected-${cell.uuid}`}
+          borderColor="rgba(64,255,64,0.5)"
+          x={cellIndex + 1}
+          y={rowIndex + 1}
+          size={tileDimension}
+          borderThrob={true}
+          onClick={() => setSelectedTile(cell, true)}
+        />,
 
-            <SelectionTile
-              enabled={highlight}
-              tint="#ff0000"
-              key={`aoe-${cell.uuid}`}
-              borderColor="rgba(255,255,255,1)"
-              x={cellIndex + 1}
-              cursor={action && selected && action.cursor}
-              y={rowIndex + 1}
-              size={tileDimension}
-              zoom={zoom}
-              borderThrob={hovered && canSubSelectTile(cell)}
-              onClick={() => selectedTile && doAction(action, selectedTile.tile, cell)}
-            />,
-          ).filter(v => v)
-        })
-      )}
-    </div>
+        <SelectionTile
+          enabled={highlight}
+          tint="#ff0000"
+          key={`aoe-${cell.uuid}`}
+          borderColor="rgba(255,255,255,1)"
+          x={cellIndex + 1}
+          cursor={action && selected && action.cursor}
+          y={rowIndex + 1}
+          size={tileDimension}
+          zoom={zoom}
+          borderThrob={hovered && canSubSelectTile(cell)}
+          onClick={() => selectedTile && doAction(action, selectedTile.tile, cell)}
+        />,
+      )
+    }} />
   </Viewport>;
 }

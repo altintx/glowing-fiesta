@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { Texture, Tile } from '../models/models';
 
 function roundTopLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
+  if(!map || !map[rowIndex] || !map[rowIndex][columnIndex]) return false;
   const cell: Tile = map[rowIndex][columnIndex];
   if(rowIndex === 0) {
     return false
@@ -12,10 +13,11 @@ function roundTopLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]):
   }
   const left = map[rowIndex][columnIndex - 1];
   const top = map[rowIndex - 1][columnIndex];
-  return (left.textures[0].graphic === top.textures[0].graphic) && (left.textures[0].graphic !== cell.textures[0].graphic);
+  return left.textures.length > 0 && top.textures.length > 0 && cell.textures.length > 0 && (left.textures[0].graphic === top.textures[0].graphic) && (left.textures[0].graphic !== cell.textures[0].graphic);
 }
 
 function roundTopRightCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
+  if(!map || !map[rowIndex] || !map[rowIndex][columnIndex]) return false;
   const cell: Tile = map[rowIndex][columnIndex];
   if(rowIndex === 0) {
     return false
@@ -25,10 +27,11 @@ function roundTopRightCell(rowIndex: number, columnIndex: number, map: Tile[][])
   }
   const right = map[rowIndex][columnIndex + 1];
   const top = map[rowIndex - 1][columnIndex];
-  return (right.textures[0].graphic === top.textures[0].graphic) && (right.textures[0].graphic !== cell.textures[0].graphic);
+  return right.textures.length > 0 && top.textures.length > 0 && cell.textures.length > 0 && (right.textures[0].graphic === top.textures[0].graphic) && (right.textures[0].graphic !== cell.textures[0].graphic);
 }
 
 function roundBottomLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
+  if(!map || !map[rowIndex] || !map[rowIndex][columnIndex]) return false;
   const cell: Tile = map[rowIndex][columnIndex];
   if(rowIndex === map.length - 1) {
     return false
@@ -38,20 +41,21 @@ function roundBottomLeftCell(rowIndex: number, columnIndex: number, map: Tile[][
   }
   const left = map[rowIndex][columnIndex - 1];
   const bottom = map[rowIndex + 1][columnIndex];
-  return (left.textures[0].graphic === bottom.textures[0].graphic) && (left.textures[0].graphic !== cell.textures[0].graphic);
+  return left.textures.length > 0 && bottom.textures.length > 0 && cell.textures.length > 0 && (left.textures[0].graphic === bottom.textures[0].graphic) && (left.textures[0].graphic !== cell.textures[0].graphic);
 }
 
 function roundBottomRightCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
+  if(!map || !map[rowIndex] || !map[rowIndex][columnIndex]) return false;
   const cell: Tile = map[rowIndex][columnIndex];
   if(rowIndex === map.length - 1)  {
     return false
   }
-  if(columnIndex === map[map[rowIndex].length - 1].length - 1) {
+  if(columnIndex === map[rowIndex].length - 1) {
     return false
   }
   const right = map[rowIndex][columnIndex + 1];
   const bottom = map[rowIndex + 1][columnIndex];
-  return (right.textures[0].graphic === bottom.textures[0].graphic) && (right.textures[0].graphic !== cell.textures[0].graphic);
+  return right.textures.length > 0 && bottom.textures.length > 0 && cell.textures.length > 0 && (right.textures[0].graphic === bottom.textures[0].graphic) && (right.textures[0].graphic !== cell.textures[0].graphic);
 }
 
 function roundCell(rowIndex: number, columnIndex: number, map: Tile[][], css: React.CSSProperties): React.CSSProperties {
@@ -72,6 +76,7 @@ function roundCell(rowIndex: number, columnIndex: number, map: Tile[][], css: Re
 }
 
 function raggedOrthogonalCell(rowIndex: number, columnIndex: number, xOffset: number, yOffset: number, map: Tile[][]): boolean {
+  if(!map || !map[rowIndex] || !map[rowIndex][columnIndex]) return false;
   const cell: Tile = map[rowIndex][columnIndex];
   if(rowIndex === 0 && yOffset < 0) {
     return false
@@ -86,7 +91,7 @@ function raggedOrthogonalCell(rowIndex: number, columnIndex: number, xOffset: nu
     return false
   }
   const neighbor = map[rowIndex + yOffset][columnIndex + xOffset];
-  return (neighbor.textures[0].graphic !== cell.textures[0].graphic);
+  return !!neighbor && neighbor.textures.length > 0 && cell.textures.length > 0 && (neighbor.textures[0].graphic !== cell.textures[0].graphic);
 }
 
 export function AnimationTexture({ graphic, direction, ms, width, height }: { graphic: string, direction: string, ms: number, width: string, height: string }) {
@@ -121,7 +126,7 @@ export function AnimationTexture({ graphic, direction, ms, width, height }: { gr
 export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimension}: {rowIndex: number, cellIndex: number, map: Tile[][], tileDimension: string}) {
   const background = useRef<string | undefined>(undefined);
   const paths = useRef<number[][]>([]);
-  useEffect(() => {
+  useEffect(() => { 
     if(roundTopLeftCell(rowIndex, cellIndex, map) && rowIndex > 0 && cellIndex > 0) {
       background.current = map[rowIndex - 1][cellIndex - 1].textures[0].graphic;
     }
@@ -177,6 +182,9 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
       return paths;
     } , []);
   }, [cellIndex, map, rowIndex]);
+
+  if(!map || !map[rowIndex] || !map[rowIndex][cellIndex]) return null;
+  
 
   return <div
     style={{
