@@ -8,6 +8,7 @@ export default function GameMenu({
     onNewGame, 
     onLogOut, 
     onFindGame, 
+    onLevelEditor,
     onOptions 
 }: { 
     operator: Operator,
@@ -15,6 +16,7 @@ export default function GameMenu({
     onNewGame: () => void, 
     onLogOut: () => void, 
     onFindGame: () => void, 
+    onLevelEditor: () => void,
     onOptions: () => void 
 }) {
     if(!operator) return <Caption>Loading...</Caption>
@@ -27,6 +29,9 @@ export default function GameMenu({
             </li>
             <li>
                 <button onClick={onFindGame}>Join Game</button>
+            </li>
+            <li>
+                <button onClick={onLevelEditor}>Level Editor</button>
             </li>
             <li>
                 <button onClick={onOptions}>Options</button>
