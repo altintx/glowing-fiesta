@@ -1,4 +1,4 @@
-import React, { ReactElement, useRef } from "react";
+import React, { ReactElement, useEffect, useRef } from "react";
 import { Operator, Tile, Character, Uuid, OperatorArrows } from "../models/models";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
@@ -6,6 +6,7 @@ import { SelectionTile } from "../components/selection-tile";
 import { LocalizedString } from "../components/localized-string";
 import { RadioButton } from "../components/radio-button";
 import { Map } from "../components/map";
+import { Background } from "../components/clouds";
 
 function isPlayer(occupant: Character | null): boolean {
   return occupant?.faction === 0;
@@ -52,6 +53,12 @@ export function Game({
   const selectedTiles = operatorArrows.filter(arrow => arrow.mode === 'select');
   const highlightedTiles = operatorArrows.filter(arrow => arrow.mode === 'possible-destination');
   const propsAction = action;
+  useEffect(() => {
+    window.document.body.classList.add('wooden-background');
+    return () => {
+      window.document.body.classList.remove('wooden-background');
+    }
+  }, []);
   
   const selectedTile = selectedTiles.find(() => true);
   const occupant = (id: Uuid): Character | null => id in characters? characters[id] : null;
@@ -119,7 +126,7 @@ export function Game({
       }
     }
   }
-  return <Viewport 
+  return <><Viewport 
     x={x} y={y} setX={setX} setY={setY} zoom={zoom} setZoom={setZoom} 
     zoomOutEnabled={zoomOutEnabled}  zoomInEnabled={zoomInEnabled} 
     rotate={rotate} setRotate={rotator} 
@@ -229,5 +236,5 @@ export function Game({
         />,
       )
     }} />
-  </Viewport>;
+  </Viewport><Background /></>;
 }
