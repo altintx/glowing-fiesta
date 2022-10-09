@@ -4,12 +4,13 @@ import Col from 'react-bootstrap/Col';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { CompositeTextureElement } from '../components/texture';
 import Form from 'react-bootstrap/Form';
 import { Tile } from '../models/models';
 import { v4 as uuid } from 'uuid';
 import { Map } from '../components/map';
+import { SelectionTile } from '../components/selection-tile';
 
 function mapToTable(cells: Tile[], width: number, height: number): Tile[][] {
     const table = [];
@@ -25,11 +26,17 @@ function mapToTable(cells: Tile[], width: number, height: number): Tile[][] {
 }
 
 export function LevelEditor () {
+    const tileDimension = 64;
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
     const [map, setMap] = useState<Tile[]>([]);
     const [tiles, setTiles] = useState<Tile[][]>([]);
-    useEffect(() => {
+    const [mapUuid, setMapUuid] = useState(uuid());
+    const [hoveredTile, setHoveredTile] = useState<Tile | null>(null);
+    const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
+    const ref = useRef<HTMLDivElement | null>(null);
+    const updateGrid = (setter: React.Dispatch<React.SetStateAction<number>>, value: string) => {
+        setter(parseInt(value));
         const a: Tile[] = Array(width * height).fill(null).map((_, i) => ({
             cover: "None",
             elevation: 0,
@@ -43,7 +50,19 @@ export function LevelEditor () {
         }))
         setMap(a);
         setTiles(mapToTable(a, width, height));
-    }, [width, height]);
+    }
+    const loadMap = (e: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            const json = JSON.parse(e.target.value);
+            setWidth(json.width);
+            setHeight(json.height);
+            setMap(json.grid);
+            setMapUuid(json.uuid);
+            setTiles(mapToTable(json.grid, json.width, json.height));
+        } catch (e) {
+
+        }
+    }
     return <Container fluid>
         <h1>Level Editor</h1>
         <Row>
@@ -51,37 +70,83 @@ export function LevelEditor () {
                 <Tabs defaultActiveKey="mapUi"
                 >
                     <Tab eventKey="mapUi" title="Map">
-                        <Map tileDimensionInt={64} map={tiles} augments={(x, y, cell) => []} />
+                        <div ref={ref} style={{
+                            overflow: "scroll",
+                            height: '80vh'
+                        }}>
+                            <div
+                                onMouseMove={(e) => {
+                                    const [mouseX, mouseY] = [e.clientX - e.nativeEvent.offsetX + tileDimension + (ref.current?.scrollLeft || 0), e.clientY - e.nativeEvent.offsetY + (ref.current?.scrollTop || 0)];
+                                    const [transformX, transformY] = [mouseX, mouseY];
+                                    const [tileX, tileY] = [Math.floor(transformX / tileDimension), Math.floor(transformY / tileDimension)];
+                                    if(tileY in map && tileX in tiles[tileY] && hoveredTile !== tiles[tileY][tileX]) {
+                                        setHoveredTile(tiles[tileY][tileX])
+                                    } 
+                                }}
+                            >
+                                <Map border={false} tileDimensionInt={tileDimension} map={tiles} augments={(x, y, cell) => {
+                                    const hovered = hoveredTile === cell;
+                                    const selected = selectedTile === cell;
+                                    return [
+                                        <SelectionTile 
+                                            enabled={hovered}
+                                            key={`hover-${cell.uuid}`}
+                                            borderColor="rgba(255,255,255,0.5)"
+                                            x={x}
+                                            y={y}
+                                            size={`${tileDimension}px`}
+                                            borderThrob={true}
+                                            onClick={() => setSelectedTile(cell)}
+                                        />,
+                                        <SelectionTile 
+                                            enabled={selected}
+                                            key={`selected-${cell.uuid}`}
+                                            borderColor="rgba(64,255,64,0.5)"
+                                            x={x}
+                                            y={y}
+                                            size={`${tileDimension}px`}
+                                            borderThrob={true}
+                                            onClick={() => setSelectedTile(null)}
+                                        />
+                                    ];
+                                }} />
+                            </div>
+                        </div>
                     </Tab>
                     <Tab eventKey="mapJson" title="JSON">
-                        <code>{JSON.stringify(map)}</code>
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            onChange={loadMap}
+                            value={JSON.stringify({width, height, grid: map, uuid: mapUuid})}
+                        />
                     </Tab>
                 </Tabs>
             </Col>
             <Col>
                 <h2>Properties</h2>
-                <>
+                <Form.Group>
                     <Form.Label htmlFor="inputWidth">Width</Form.Label>
                     <Form.Control
                         type="number"
                         id="mapWidth"
                         value={width}
-                        onChange={e => setWidth(parseInt(e.target.value))}
+                        onChange={e => updateGrid(setWidth, e.target.value)}
                         aria-describedby="widthHelpBlock"
                     />
                     <Form.Text id="widthHelpBlock" muted>Map is this many tiles wide</Form.Text>
-                </>
-                <>
+                </Form.Group>
+                <Form.Group>
                     <Form.Label htmlFor="inputHeight">Height</Form.Label>
                     <Form.Control
                         type="number"
-                        onChange={e => setHeight(parseInt(e.target.value))}
+                        onChange={e => updateGrid(setHeight, e.target.value)}
                         value={height}
                         id="mapHeight"
                         aria-describedby="heightHelpBlock"
                     />
                     <Form.Text id="heightHelpBlock" muted>Map is this many tiles high</Form.Text>
-                </>
+                </Form.Group>
             </Col>
         </Row>
     </Container>

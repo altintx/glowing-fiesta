@@ -180,33 +180,25 @@ export function Game({
       updateTileFocus2d(e);
       maybeScroll(e);
     }}>
-    <Map map={map} tileDimensionInt={tileDimensionInt} augments={(cellIndex: number, rowIndex: number, cell: Tile): Array<null | ReactElement | JSX.Element> => {
+    <Map map={map} counterRotate={rotate} tileDimensionInt={tileDimensionInt} augments={(cellIndex: number, rowIndex: number, cell: Tile): Array<null | ReactElement | JSX.Element> => {
       const hovered = hoverTiles.map(a => a.tile.uuid).includes(cell.uuid);
       const selected = selectedTiles.map(a => a.tile.uuid).includes(cell.uuid);
       const highlight = highlightedTiles.map(a => a.tile.uuid).includes(cell.uuid);
       
-      return ([] as Array<null | ReactElement | JSX.Element>).concat(cell.occupant? 
-        (typeof cell.occupant === "string"?
-          <img
-            src="marker.png" 
-            className='tile'
-            alt="marker"
-            key={`player-token-${cell.occupant}`}
-            style={{
-              gridColumn: `${cellIndex + 1}`,
-              gridRow: `${rowIndex + 1}`,
-              width: tileDimension,
-              height: tileDimension,
-              rotate: `-${rotate}deg`
-            }}
-          /> : <Obstacle
-            {...cell.occupant}
-            key={`obstacle-${cell.occupant.uuid}`}
-            row={rowIndex + 1}
-            column={cellIndex + 1}
-            tileDimension={tileDimensionInt}
-            rotate={rotate}
-          />) : null,
+      return ([] as Array<null | ReactElement | JSX.Element>).concat(cell.occupant && typeof cell.occupant === "string"?
+        <img
+          src="marker.png" 
+          className='tile'
+          alt="marker"
+          key={`player-token-${cell.occupant}`}
+          style={{
+            gridColumn: `${cellIndex + 1}`,
+            gridRow: `${rowIndex + 1}`,
+            width: tileDimension,
+            height: tileDimension,
+            rotate: `-${rotate}deg`
+          }}
+        /> : null,
 
         // hoverstate
         canSelectTile(cell)? <SelectionTile 
