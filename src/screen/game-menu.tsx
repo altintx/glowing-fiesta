@@ -8,15 +8,17 @@ export default function GameMenu({
     onNewGame, 
     onLogOut, 
     onFindGame, 
-    onLevelEditor,
-    onOptions 
+    onMapEditor,
+    onOptions,
+    onMissionEditor,
 }: { 
     operator: Operator,
     language: string,
     onNewGame: () => void, 
     onLogOut: () => void, 
     onFindGame: () => void, 
-    onLevelEditor: () => void,
+    onMapEditor: () => void,
+    onMissionEditor: () => void,
     onOptions: () => void 
 }) {
     if(!operator) return <Caption>Loading...</Caption>
@@ -31,7 +33,9 @@ export default function GameMenu({
                 <button onClick={onFindGame}>Join Game</button>
             </li>
             <li>
-                <button onClick={onLevelEditor}>Level Editor</button>
+                <button onClick={onMapEditor}>Map Editor</button>
+                <button onClick={onMissionEditor}>Mission Editor</button>
+                <button disabled>Campaign Editor</button>
             </li>
             <li>
                 <button onClick={onOptions}>Options</button>

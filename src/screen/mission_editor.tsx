@@ -5,7 +5,6 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useRef, useState } from 'react';
-import { CompositeTextureElement } from '../components/texture';
 import Form from 'react-bootstrap/Form';
 import { Tile } from '../models/models';
 import { v4 as uuid } from 'uuid';
@@ -25,7 +24,7 @@ function mapToTable(cells: Tile[], width: number, height: number): Tile[][] {
     return table;
 }
 
-export function LevelEditor () {
+export function MissionEditor () {
     const tileDimension = 64;
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
@@ -64,7 +63,7 @@ export function LevelEditor () {
         }
     }
     return <Container fluid>
-        <h1>Level Editor</h1>
+        <h1>Mission Editor</h1>
         <Row>
             <Col>
                 <Tabs defaultActiveKey="mapUi"

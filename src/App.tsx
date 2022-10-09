@@ -9,7 +9,8 @@ import { translate } from './components/localized-string';
 import { Caption } from './components/caption';
 import { Games } from './screen/games';
 import { NewGame } from './screen/new-game';
-import { LevelEditor } from './screen/level_editor';
+import { MapEditor } from './screen/map_editor';
+import { MissionEditor } from './screen/mission_editor';
 
 let helloTimeout: NodeJS.Timeout | undefined;
 
@@ -310,7 +311,8 @@ class App extends React.Component<
             socket.emit('list_games');
             setScreen("list_games");
           }}
-          onLevelEditor={() => setScreen("level_editor")}
+          onMapEditor={() => setScreen("map_editor")}
+          onMissionEditor={() => setScreen("mission_editor")}
           onOptions={() => {
           }}
         />
@@ -334,8 +336,11 @@ class App extends React.Component<
           connect={(gameId) => {
 
           }} />
-      case "level_editor":
-        return <LevelEditor
+      case "map_editor":
+        return <MapEditor
+        />
+      case "mission_editor":
+        return <MissionEditor
         />
       case "game":
         return <Game 

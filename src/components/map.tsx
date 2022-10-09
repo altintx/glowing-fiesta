@@ -14,7 +14,7 @@ export function Map({
   tileDimensionInt: number,
   border?: boolean,
   counterRotate?: number,
-  augments: (x: number, y: number, cell: Tile) => Array<null | ReactElement | JSX.Element>
+  augments: (x: number, y: number, cell: Tile) => Array<null | ReactElement | JSX.Element>,
 }) {
   const tileDimension = `${tileDimensionInt}px`;
   

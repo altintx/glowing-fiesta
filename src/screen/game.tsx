@@ -2,10 +2,8 @@ import React, { ReactElement, useRef } from "react";
 import { Operator, Tile, Character, Uuid, OperatorArrows } from "../models/models";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
-import { Obstacle } from "../components/obstacle";
 import { SelectionTile } from "../components/selection-tile";
 import { LocalizedString } from "../components/localized-string";
-import { CompositeTextureElement } from "../components/texture";
 import { RadioButton } from "../components/radio-button";
 import { Map } from "../components/map";
 
@@ -54,13 +52,6 @@ export function Game({
   const selectedTiles = operatorArrows.filter(arrow => arrow.mode === 'select');
   const highlightedTiles = operatorArrows.filter(arrow => arrow.mode === 'possible-destination');
   const propsAction = action;
-
-  const shadow: Record<number, string> = {
-    45: "1em 1em 4em black",
-    135: "1em -1em 4em black",
-    225: "-1em -1em 4em black",
-    315: "-1em 1em 4em black",
-  }
   
   const selectedTile = selectedTiles.find(() => true);
   const occupant = (id: Uuid): Character | null => id in characters? characters[id] : null;

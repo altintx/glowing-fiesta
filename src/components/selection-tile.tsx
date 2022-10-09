@@ -9,7 +9,33 @@ function parseColor(html: string): number[] {
     ].map(hex => parseInt(hex, 16))
 }
 
-export function SelectionTile({x, y, size, tint, borderColor, borderThrob, onClick, enabled, hover, cursor,zoom}:{x: number, y: number, size: string, tint?: string, borderColor?: string, borderThrob?: boolean, onClick?: () => void, enabled: boolean, hover?: boolean, cursor?: string, zoom?: number }): ReactElement<HTMLDivElement>|null {
+export function SelectionTile({
+    x,
+    y,
+    size,
+    tint,
+    borderColor,
+    borderThrob,
+    onClick,
+    enabled,
+    hover,
+    cursor,
+    zoom,
+    zIndex,
+  }:{
+    x: number,
+    y: number,
+    size: string,
+    tint?: string,
+    borderColor?: string,
+    borderThrob?: boolean,
+    onClick?: () => void,
+    enabled: boolean,
+    hover?: boolean,
+    cursor?: string,
+    zoom?: number,
+    zIndex?: number,
+}): ReactElement<HTMLDivElement>|null {
     let _opacity = 0;
     const _radiuses: { [key: string]: string } = {
         "-1": "4px",
@@ -51,6 +77,9 @@ export function SelectionTile({x, y, size, tint, borderColor, borderThrob, onCli
     }
     if(_opacity > 0) {
         style.opacity = _opacity;
+    }
+    if(zIndex !== undefined) {
+        style.zIndex = zIndex;
     }
     const classes = ["tile"];
     if(borderThrob) {
