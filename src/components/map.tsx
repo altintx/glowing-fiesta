@@ -36,8 +36,8 @@ export function Map({
           cell.occupant && typeof cell.occupant !== "string"? <Obstacle
           {...cell.occupant}
           key={`obstacle-${cell.occupant.uuid}`}
-          row={rowIndex + 1}
-          column={cellIndex + 1}
+          row={rowIndex }
+          column={cellIndex}
           tileDimension={tileDimensionInt}
           rotate={counterRotate}
         />: null, 

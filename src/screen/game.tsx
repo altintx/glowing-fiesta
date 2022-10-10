@@ -203,8 +203,8 @@ export function Game({
           enabled={hovered}
           key={`hover-${cell.uuid}`}
           borderColor="rgba(255,255,255,0.5)"
-          x={cellIndex + 1}
-          y={rowIndex + 1}
+          x={cellIndex}
+          y={rowIndex}
           size={tileDimension}
           borderThrob={true}
           onClick={() => setSelectedTile(cell)}
@@ -214,8 +214,8 @@ export function Game({
           enabled={selected}
           key={`selected-${cell.uuid}`}
           borderColor="rgba(64,255,64,0.5)"
-          x={cellIndex + 1}
-          y={rowIndex + 1}
+          x={cellIndex}
+          y={rowIndex}
           size={tileDimension}
           borderThrob={true}
           onClick={() => setSelectedTile(cell, true)}
@@ -226,9 +226,9 @@ export function Game({
           tint="#ff0000"
           key={`aoe-${cell.uuid}`}
           borderColor="rgba(255,255,255,1)"
-          x={cellIndex + 1}
+          x={cellIndex}
           cursor={action && selected && action.cursor}
-          y={rowIndex + 1}
+          y={rowIndex}
           size={tileDimension}
           zoom={zoom}
           borderThrob={hovered && canSubSelectTile(cell)}

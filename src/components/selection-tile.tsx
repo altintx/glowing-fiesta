@@ -51,8 +51,8 @@ export function SelectionTile({
         boxSizing: "border-box",
         width: size,
         height: size,
-        gridColumn: x,
-        gridRow: y,
+        gridColumn: x + 1,
+        gridRow: y + 1,
         cursor: cursor
     }
     let lighten = false;

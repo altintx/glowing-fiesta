@@ -10,6 +10,7 @@ import { Tile } from '../models/models';
 import { v4 as uuid } from 'uuid';
 import { Map } from '../components/map';
 import { SelectionTile } from '../components/selection-tile';
+import { TileConfig } from '../components/tile-config';
 
 function mapToTable(cells: Tile[], width: number, height: number): Tile[][] {
   const table = [];
@@ -62,6 +63,9 @@ export function MapEditor() {
 
     }
   }
+  const onSave = (tile: Tile) => {
+
+  }
   return <Container fluid>
     <h1>Map Editor</h1>
     <Row>
@@ -75,10 +79,14 @@ export function MapEditor() {
             }}>
               <div
                 onMouseMove={(e) => {
-                  const [mouseX, mouseY] = [e.clientX - e.nativeEvent.offsetX + tileDimension + (ref.current?.scrollLeft || 0), e.clientY - e.nativeEvent.offsetY + (ref.current?.scrollTop || 0)];
-                  const [transformX, transformY] = [mouseX, mouseY];
-                  const [tileX, tileY] = [Math.floor(transformX / tileDimension), Math.floor(transformY / tileDimension)];
+                  var bounds = ref?.current?.getBoundingClientRect();
+                  if(!bounds) return;
+                  var x = e.clientX - bounds.left;
+                  var y = e.clientY - bounds.top;
+                  const [tileX, tileY] = [Math.floor(x / tileDimension), Math.floor(y / tileDimension)];
+                  console.log(`x: ${x}, y: ${y}, tileX: ${tileX}, tileY: ${tileY}`);
                   if (tileY in map && tileX in tiles[tileY] && hoveredTile !== tiles[tileY][tileX]) {
+                    console.log("Setting tile")
                     setHoveredTile(tiles[tileY][tileX])
                   }
                 }}
@@ -130,6 +138,11 @@ export function MapEditor() {
       </Col>
       <Col>
         <h2>Properties</h2>
+        {selectedTile && <TileConfig key={selectedTile.uuid} tile={selectedTile} onSave={onSave} onCancel={() => void 0} />}
+      </Col>
+    </Row>
+    <Row>
+      <Col>
         <Form.Group>
           <Form.Label htmlFor="inputWidth">Width</Form.Label>
           <Form.Control
@@ -141,6 +154,8 @@ export function MapEditor() {
           />
           <Form.Text id="widthHelpBlock" muted>Map is this many tiles wide</Form.Text>
         </Form.Group>
+      </Col>
+      <Col>
         <Form.Group>
           <Form.Label htmlFor="inputHeight">Height</Form.Label>
           <Form.Control

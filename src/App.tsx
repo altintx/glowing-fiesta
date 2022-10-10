@@ -146,7 +146,16 @@ class App extends React.Component<
         closedCaptioning: undefined,
         cursors: []
       });
-      // todo: end turn if no AP remain
+    });
+    socket.on('action_error', ({ actionId, sig }) => {
+      if(sig !== this.state.sig) {
+        return;
+      }
+      this.setState({
+        closedCaptioning: undefined,
+        cursors: []
+      });
+      alert("Error performing action");
     });
     socket.on('style_tile', ({ tile, mode, announcer, sig }) => {
       if(this.state.tileEventIds.includes(sig)) return;
