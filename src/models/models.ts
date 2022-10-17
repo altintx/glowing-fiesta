@@ -9,8 +9,9 @@ export type Texture = {
   offset: number[];
   animation: AnimationCell[];
 }
+export type CoverType = 'None' | 'Full' | 'Half'
 export type Tile = {
-  cover: 'None' | 'Full' | 'Half';
+  cover: CoverType;
   elevation: number;
   occupant: any;
   openable: boolean;

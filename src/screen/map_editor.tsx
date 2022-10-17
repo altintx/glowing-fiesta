@@ -6,11 +6,13 @@ import Tabs from 'react-bootstrap/Tabs';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useRef, useState } from 'react';
 import Form from 'react-bootstrap/Form';
-import { Tile } from '../models/models';
+import { Texture, Tile } from '../models/models';
 import { v4 as uuid } from 'uuid';
 import { Map } from '../components/map';
 import { SelectionTile } from '../components/selection-tile';
 import { TileConfig } from '../components/tile-config';
+import { flatten } from 'array-flatten';
+import unique from 'array-unique';
 
 function mapToTable(cells: Tile[], width: number, height: number): Tile[][] {
   const table = [];
@@ -34,6 +36,8 @@ export function MapEditor() {
   const [mapUuid, setMapUuid] = useState(uuid());
   const [hoveredTile, setHoveredTile] = useState<Tile | null>(null);
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
+  const [graphics, setGraphics] = useState<string[]>([]);
+  const [sprites, setSprites] = useState<string[]>([]);
   const ref = useRef<HTMLDivElement | null>(null);
   const updateGrid = (setter: React.Dispatch<React.SetStateAction<number>>, value: string) => {
     setter(parseInt(value));
@@ -52,24 +56,27 @@ export function MapEditor() {
     setTiles(mapToTable(a, width, height));
   }
   const loadMap = (e: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      const json = JSON.parse(e.target.value);
-      setWidth(json.width);
-      setHeight(json.height);
-      setMap(json.grid);
-      setMapUuid(json.uuid);
-      setTiles(mapToTable(json.grid, json.width, json.height));
-    } catch (e) {
-
-    }
+    const json = JSON.parse(e.target.value);
+    setWidth(json.width);
+    setHeight(json.height);
+    setMap(json.grid);
+    setMapUuid(json.uuid);
+    setTiles(mapToTable(json.grid, json.width, json.height));
+    setGraphics(unique(flatten(json.grid.map((t: Tile) => t.textures.map(t => t.graphic)))));
+    const __sprites = json.grid.map((t: Tile) => t.occupant && typeof t.occupant === "object"? t.occupant.textures.map((t: Texture) => t.graphic): [])
+    setSprites(unique(flatten(__sprites)));
   }
   const onSave = (tile: Tile) => {
-
+    console.log(tile);
+    const newMap = map.map(t => t.uuid === tile.uuid? tile: t);
+    setMap(newMap);
+    setTiles(mapToTable(newMap, width, height));
+    setSelectedTile(tile);
   }
-  return <Container fluid>
+  return <><Container fluid>
     <h1>Map Editor</h1>
     <Row>
-      <Col>
+      <Col className="col-7">
         <Tabs defaultActiveKey="mapUi"
         >
           <Tab eventKey="mapUi" title="Map">
@@ -80,13 +87,11 @@ export function MapEditor() {
               <div
                 onMouseMove={(e) => {
                   var bounds = ref?.current?.getBoundingClientRect();
-                  if(!bounds) return;
-                  var x = e.clientX - bounds.left;
-                  var y = e.clientY - bounds.top;
+                  if(!bounds || !ref.current) return;
+                  var x = e.clientX - bounds.left + ref.current.scrollLeft;
+                  var y = e.clientY - bounds.top + ref.current.scrollTop;
                   const [tileX, tileY] = [Math.floor(x / tileDimension), Math.floor(y / tileDimension)];
-                  console.log(`x: ${x}, y: ${y}, tileX: ${tileX}, tileY: ${tileY}`);
                   if (tileY in map && tileX in tiles[tileY] && hoveredTile !== tiles[tileY][tileX]) {
-                    console.log("Setting tile")
                     setHoveredTile(tiles[tileY][tileX])
                   }
                 }}
@@ -129,45 +134,55 @@ export function MapEditor() {
           <Tab eventKey="mapJson" title="JSON">
             <Form.Control
               as="textarea"
-              rows={3}
+              style={{
+                height: '80vh'
+              }}
               onChange={loadMap}
               value={JSON.stringify({ width, height, grid: map, uuid: mapUuid })}
             />
           </Tab>
         </Tabs>
       </Col>
-      <Col>
+      <Col className="col-5" style={{overflowY:"scroll",height:"90vh"}}>
         <h2>Properties</h2>
-        {selectedTile && <TileConfig key={selectedTile.uuid} tile={selectedTile} onSave={onSave} onCancel={() => void 0} />}
+        {selectedTile && <TileConfig key={selectedTile.uuid} tile={selectedTile} graphics={graphics} sprites={sprites} onSave={onSave} onCancel={() => void 0} />}
       </Col>
     </Row>
+  </Container>
+  <Container fluid style={{
+    position: "fixed",
+    bottom: 0,
+  }}>
     <Row>
       <Col>
-        <Form.Group>
-          <Form.Label htmlFor="inputWidth">Width</Form.Label>
-          <Form.Control
-            type="number"
-            id="mapWidth"
-            value={width}
-            onChange={e => updateGrid(setWidth, e.target.value)}
-            aria-describedby="widthHelpBlock"
-          />
-          <Form.Text id="widthHelpBlock" muted>Map is this many tiles wide</Form.Text>
+        <Form.Group as={Row} className="mb-3">
+          <Form.Label column sm={2} htmlFor="inputWidth">Width</Form.Label>
+          <Col sm={10}>
+            <Form.Control
+              type="number"
+              id="mapWidth"
+              value={width}
+              onChange={e => updateGrid(setWidth, e.target.value)}
+              aria-describedby="widthHelpBlock"
+            />
+          </Col>
         </Form.Group>
       </Col>
       <Col>
-        <Form.Group>
-          <Form.Label htmlFor="inputHeight">Height</Form.Label>
-          <Form.Control
-            type="number"
-            onChange={e => updateGrid(setHeight, e.target.value)}
-            value={height}
-            id="mapHeight"
-            aria-describedby="heightHelpBlock"
-          />
-          <Form.Text id="heightHelpBlock" muted>Map is this many tiles high</Form.Text>
+        <Form.Group as={Row} className="mb-3">
+          <Form.Label column sm={2} htmlFor="inputHeight">Height</Form.Label>
+          <Col sm={10}>
+            <Form.Control
+              type="number"
+              onChange={e => updateGrid(setHeight, e.target.value)}
+              value={height}
+              id="mapHeight"
+              aria-describedby="heightHelpBlock"
+            />
+          </Col>
         </Form.Group>
       </Col>
     </Row>
   </Container>
+  </>
 }

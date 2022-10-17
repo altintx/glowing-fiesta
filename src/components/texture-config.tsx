@@ -1,31 +1,42 @@
 import { useState } from "react";
+import { Form, Row, Col } from 'react-bootstrap';
+import { Texture } from "../models/models";
 
-export function TextureConfig(props: any) {
-  const [graphic, setGraphic] = useState(props.texture.graphic);
-  const [offset, setOffset] = useState(props.texture.offset);
+export function TextureConfig({ texture, onChange, graphics }: { texture: Texture, onChange: (texture: Texture) => void, graphics: string[] }) {
+  const [graphic, setGraphic] = useState(texture.graphic);
+  const [offset, setOffset] = useState(texture.offset);
   return <>
-    <div className="texture-config">
-      <div className="texture-config-header">
-        <h3>Texture Config</h3>
-      </div>
-      <div className="texture-config-body">
-        <div className="texture-config-row">
-          <label>Graphic</label>
-          <input type="text" value={graphic} onChange={(e) => setGraphic(e.target.value)} />
-        </div>
-        <div className="texture-config-row">
-          <label>Offset X</label>
-          <input type="text" value={offset.x} onChange={(e) => setOffset({ ...offset, x: e.target.value })} />
-        </div>
-        <div className="texture-config-row">
-          <label>Offset Y</label>
-          <input type="text" value={offset.y} onChange={(e) => setOffset({ ...offset, y: e.target.value })} />
-        </div>
-        <div className="texture-config-row">
-          <label>Offset Z</label>
-          <input type="text" value={offset.y} onChange={(e) => setOffset({ ...offset, y: e.target.value })} />
-        </div>
-      </div>
-    </div>
+    <Form.Group as={Row} controlId="texture-graphic">
+      <Form.Label column sm={3}>Graphic</Form.Label>
+      <Col sm={9}>
+        <Form.Select className="mb-3" onChange={e => {
+          setGraphic(e.target.value);
+          onChange({ ...texture, graphic: e.target.value });
+        }} value={graphic}>
+          {graphics.map((g: any) => <option value={g}>{g}</option>)}
+        </Form.Select>
+      </Col>
+    </Form.Group>
+    <Form.Group as={Row}>
+      <Form.Label column sm={3}>Offset X/Y/Z</Form.Label>
+      <Col sm={3}>
+        <Form.Control type="number" value={offset[0]} onChange={e => {
+          setOffset([parseInt(e.target.value), offset[1], offset[2]]);
+          onChange({ ...texture, offset: [parseInt(e.target.value), offset[1], offset[2]] });
+        }} />
+      </Col>
+      <Col sm={3}>
+        <Form.Control type="number" value={offset[1]} onChange={e => {
+          setOffset([offset[0], parseInt(e.target.value), offset[2]]);
+          onChange({ ...texture, offset: [offset[0], parseInt(e.target.value), offset[2]] });
+        }} />
+      </Col>
+      <Col sm={3}>
+        <Form.Control type="number" value={offset[2]} onChange={e => {
+          setOffset([offset[0], offset[1], parseInt(e.target.value)]);
+          onChange({ ...texture, offset: [offset[0], offset[1], parseInt(e.target.value)] });
+        }} />
+      </Col>
+    </Form.Group>
   </>;
 }
