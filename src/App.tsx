@@ -9,8 +9,8 @@ import { translate } from './components/localized-string';
 import { Caption } from './components/caption';
 import { Games } from './screen/games';
 import { NewGame } from './screen/new-game';
-import { MapEditor } from './screen/map_editor';
-import { MissionEditor } from './screen/mission_editor';
+import { MapEditor } from './screen/map-editor';
+import { MissionEditor } from './screen/mission-editor';
 
 let helloTimeout: NodeJS.Timeout | undefined;
 
