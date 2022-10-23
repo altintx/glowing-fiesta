@@ -199,20 +199,30 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
     }}
     >
       {map[rowIndex][cellIndex].textures.map((texture: Texture, index: number) => {
-        let tile = texture.graphic === background.current? null: <img
+        let tile = <IndividualTile
+          texture={texture} 
+          tileDimension={tileDimension} 
           key={`texture-${rowIndex}-${cellIndex}-${index}`}
-          className="tile"
-          src={`thethirdsequence/${texture.graphic}512.jpg`}
-          alt={texture.graphic}
-          style={((): React.CSSProperties => {
-            return roundCell(rowIndex, cellIndex, map, {
-              width: tileDimension,
-              height: tileDimension,
-              clipPath: paths.current.length? `polygon(${paths.current.map(([x,y]) => `${x}% ${y}%`).join(',')})`: undefined,
-            });
-          })()}
-        />
+          background={background.current}
+          style={roundCell(rowIndex, cellIndex, map, {
+            width: tileDimension,
+            height: tileDimension,
+            clipPath: paths.current.length? `polygon(${paths.current.map(([x,y]) => `${x}% ${y}%`).join(',')})`: undefined,
+          })}
+        />;
         return <>{tile}{texture.animation.map(c => <AnimationTexture width={tileDimension} height={tileDimension} {...c} />)}</>;
       })}
   </div>
+}
+
+export function IndividualTile({texture,  tileDimension, style, background }: {texture: Texture, tileDimension: string, style?: React.CSSProperties, background?: string}) {
+  return texture.graphic === background? null: <img
+    className="tile"
+    src={`thethirdsequence/${texture.graphic}512.jpg`}
+    alt={texture.graphic}
+    style={style? style: { 
+      width: tileDimension,
+      height: tileDimension,
+    }}
+  />
 }

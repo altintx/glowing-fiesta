@@ -13,6 +13,9 @@ import { SelectionTile } from '../components/selection-tile';
 import { TileConfig } from '../components/tile-config';
 import { flatten } from 'array-flatten';
 import unique from 'array-unique';
+import { TextureBrowser } from '../components/texture-browser';
+import { SpriteBrowser } from '../components/sprite-browser';
+import { MapConfig } from '../components/map-config';
 
 function mapToTable(cells: Tile[], width: number, height: number): Tile[][] {
   const table = [];
@@ -144,45 +147,54 @@ export function MapEditor() {
         </Tabs>
       </Col>
       <Col className="col-5" style={{overflowY:"scroll",height:"90vh"}}>
-        <h2>Properties</h2>
+        <TextureBrowser
+          graphics={graphics} 
+          setGraphics={setGraphics} 
+          tileDimension={tileDimension} 
+          selectedTile={selectedTile} 
+          onSelect={({ tile, action, graphic}: { tile: Tile, action: string, graphic: string}) => {
+            const newTile: Tile = { ...tile };
+            switch(action) {
+              case "add":
+                newTile.textures.push({ graphic, offset: [0,0,0], animation: [] });
+                break;
+              case "set":
+                newTile.textures = [{ graphic, offset: [0,0,0], animation: [] }];
+                break;
+            }
+            onSave(newTile);
+          }}
+        />
+        <SpriteBrowser 
+          sprites={sprites} 
+          setSprites={setSprites} 
+          tileDimension={tileDimension} 
+          selectedTile={selectedTile}
+          onSelect={({ tile, action, graphic}: { tile: Tile, action: string, graphic: string}) => {
+            const newTile: Tile = { ...tile };
+            switch(action) {
+              case "set":
+                newTile.occupant = {
+                  textures: [{
+                    graphic, 
+                    offset: [0,0,0],
+                    animation: []
+                  }],
+                  name: {
+                    en: graphic,
+                  },
+                  visible: true,
+                  width: 1,
+                  height: 1,
+                };
+                break;
+            }
+            onSave(newTile);
+          }} />
         {selectedTile && <TileConfig key={selectedTile.uuid} tile={selectedTile} graphics={graphics} sprites={sprites} onSave={onSave} onCancel={() => void 0} />}
+        <MapConfig width={width} height={height} setWidth={setWidth} setHeight={setHeight} updateGrid={updateGrid} />
       </Col>
     </Row>
   </Container>
-  <Container fluid style={{
-    position: "fixed",
-    bottom: 0,
-  }}>
-    <Row>
-      <Col>
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2} htmlFor="inputWidth">Width</Form.Label>
-          <Col sm={10}>
-            <Form.Control
-              type="number"
-              id="mapWidth"
-              value={width}
-              onChange={e => updateGrid(setWidth, e.target.value)}
-              aria-describedby="widthHelpBlock"
-            />
-          </Col>
-        </Form.Group>
-      </Col>
-      <Col>
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2} htmlFor="inputHeight">Height</Form.Label>
-          <Col sm={10}>
-            <Form.Control
-              type="number"
-              onChange={e => updateGrid(setHeight, e.target.value)}
-              value={height}
-              id="mapHeight"
-              aria-describedby="heightHelpBlock"
-            />
-          </Col>
-        </Form.Group>
-      </Col>
-    </Row>
-  </Container>
-  </>
+ </>
 }

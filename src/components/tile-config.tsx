@@ -7,6 +7,15 @@ import { v4 as uuid } from "uuid";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
+const occupantType = (occupant: any): string => {
+  if (occupant === null) {
+    return "empty";
+  } else if (typeof occupant === "string") {
+    return "spawnpoint";
+  }
+  return "obstacle";
+}
+
 export function TileConfig({ tile: originalTile, onSave, onCancel, graphics, sprites }: { tile: Tile, graphics: string[], sprites: string[], onSave: (tile: Tile) => void, onCancel: () => void }) {
   const [tile, setTile] = useState(originalTile);
   const [tileType, setTileType] = useState(tile.type);
@@ -31,7 +40,7 @@ export function TileConfig({ tile: originalTile, onSave, onCancel, graphics, spr
         <h5>Tile Config</h5>
       </Card.Header>
       <Card.Body>
-        <Form.Group as={Row} controlId="tile-type">
+        <Form.Group as={Row} controlId="tile-type" style={{display:"none"}}>
           <Form.Label column sm={3}>Type</Form.Label>
           <Col sm={9}>
             <Form.Select className="mb-3"  onChange={(e) => {
@@ -145,8 +154,8 @@ export function TileConfig({ tile: originalTile, onSave, onCancel, graphics, spr
                     const t = textures[index];
                     textures[index] = textures[index + 1];
                     textures[index + 1] = t;
-                    setTileTextures(textures);
-                    const newTile = { ...tile, textures };
+                    setTileTextures(textures.map(t => ({ ...t })));
+                    const newTile = { ...tile, textures: textures.map(t => ({ ...t })) };
                     onSave(newTile);
                   }} disabled={index + 1 === tileTextures.length}><FontAwesomeIcon icon={faArrowDown} /></Button>
                 </ButtonGroup>
@@ -156,9 +165,21 @@ export function TileConfig({ tile: originalTile, onSave, onCancel, graphics, spr
         </ListGroup>
       </Card.Text>
     </Card>
-    <Card className="mb-5">
+    <Card className="mb-3">
       <Card.Header>
-        <h5>Occupant</h5>
+        <Row>
+          <Col>
+            <h5 className="mt-1">Occupant</h5>
+          </Col>
+          <Col>
+          <Form.Select onChange={(e) => { }} value={occupantType(tileOccupant)}>
+            <option value="empty">Empty</option>
+            <option value="spawnpoint">Spawn Point</option>
+            <option value="obstacle">Obstacle</option>
+          </Form.Select>
+          </Col>
+        </Row>
+        
       </Card.Header>
       <Card.Body>
         {typeof tileOccupant === "string" ? "Character":

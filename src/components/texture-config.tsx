@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { Form, Row, Col } from 'react-bootstrap';
 import { Texture } from "../models/models";
+import { IndividualTile } from "./texture";
 
 export function TextureConfig({ texture, onChange, graphics }: { texture: Texture, onChange: (texture: Texture) => void, graphics: string[] }) {
   const [graphic, setGraphic] = useState(texture.graphic);
   const [offset, setOffset] = useState(texture.offset);
   return <>
     <Form.Group as={Row} controlId="texture-graphic">
-      <Form.Label column sm={3}>Graphic</Form.Label>
-      <Col sm={9}>
+      <Col sm={3}>
+        <IndividualTile texture={{graphic, animation: [], offset:[0,0,0] }} tileDimension="6em" />
+      </Col>
+      <Col sm={7}>
+        <Form.Label sm={3}>Graphic</Form.Label>
         <Form.Select className="mb-3" onChange={e => {
           setGraphic(e.target.value);
           onChange({ ...texture, graphic: e.target.value });
@@ -17,7 +21,7 @@ export function TextureConfig({ texture, onChange, graphics }: { texture: Textur
         </Form.Select>
       </Col>
     </Form.Group>
-    <Form.Group as={Row}>
+    <Form.Group as={Row} style={{display:"none"}}>
       <Form.Label column sm={3}>Offset X/Y/Z</Form.Label>
       <Col sm={3}>
         <Form.Control type="number" value={offset[0]} onChange={e => {
