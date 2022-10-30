@@ -1,10 +1,12 @@
 import { Menu } from "../components/menu";
 import useLocalStorage from 'react-localstorage-hook';
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { LocalizedString, translate } from "../components/localized-string";
+import { Col, Form, FormGroup, Row } from "react-bootstrap";
 
 export default function MainMenu({ login, language }: { login: (screenName: string) => void, language: string }) {
     const [screenName, setScreenName] = useLocalStorage('screenName', undefined);
+    const highPerfModeCheckbox = useRef<HTMLInputElement>(null);
     const [screenNameInput, setScreenNameInput] = useState(screenName || '');
     const doLogin = (name: string) => {
         if (name) {
@@ -36,5 +38,13 @@ export default function MainMenu({ login, language }: { login: (screenName: stri
                 </form>
             </div>
         </div>
+        <Form.Group as={Row} controlId="tile-openable">
+          <Form.Label column sm={3}><LocalizedString language={language} translations={{ en: "High Performance Mode" }}/></Form.Label>
+          <Col sm={9}>
+            <Form.Check ref={highPerfModeCheckbox} type="checkbox" className="mb-3" onChange={(e) => {
+                window['highPerf'] = e.target.checked;
+            }} />
+          </Col>
+        </Form.Group>
     </Menu>
 }
