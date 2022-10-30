@@ -2,6 +2,11 @@ import React, { useEffect } from 'react';
 import { useRef } from 'react';
 import { Texture, Tile } from '../models/models';
 
+
+function last(arr: any[]) {
+  return arr[arr.length - 1];
+}
+
 function roundTopLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
   if(!map || !map[rowIndex] || !map[rowIndex][columnIndex]) return false;
   const cell: Tile = map[rowIndex][columnIndex];
@@ -13,7 +18,7 @@ function roundTopLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]):
   }
   const left = map[rowIndex][columnIndex - 1];
   const top = map[rowIndex - 1][columnIndex];
-  return left.textures.length > 0 && top.textures.length > 0 && cell.textures.length > 0 && (left.textures[0].graphic === top.textures[0].graphic) && (left.textures[0].graphic !== cell.textures[0].graphic);
+  return left.textures.length > 0 && top.textures.length > 0 && cell.textures.length > 0 && (last(left.textures).graphic ===last(top.textures).graphic) && (last(left.textures).graphic !== last(cell.textures).graphic);
 }
 
 function roundTopRightCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
@@ -27,7 +32,7 @@ function roundTopRightCell(rowIndex: number, columnIndex: number, map: Tile[][])
   }
   const right = map[rowIndex][columnIndex + 1];
   const top = map[rowIndex - 1][columnIndex];
-  return right.textures.length > 0 && top.textures.length > 0 && cell.textures.length > 0 && (right.textures[0].graphic === top.textures[0].graphic) && (right.textures[0].graphic !== cell.textures[0].graphic);
+  return right.textures.length > 0 && top.textures.length > 0 && cell.textures.length > 0 && (last(right.textures).graphic === last(top.textures).graphic) && (last(right.textures).graphic !== last(cell.textures).graphic);
 }
 
 function roundBottomLeftCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
@@ -41,7 +46,7 @@ function roundBottomLeftCell(rowIndex: number, columnIndex: number, map: Tile[][
   }
   const left = map[rowIndex][columnIndex - 1];
   const bottom = map[rowIndex + 1][columnIndex];
-  return left.textures.length > 0 && bottom.textures.length > 0 && cell.textures.length > 0 && (left.textures[0].graphic === bottom.textures[0].graphic) && (left.textures[0].graphic !== cell.textures[0].graphic);
+  return left.textures.length > 0 && bottom.textures.length > 0 && cell.textures.length > 0 && (last(left.textures).graphic === last(bottom.textures).graphic) && (last(left.textures).graphic !== last(cell.textures).graphic);
 }
 
 function roundBottomRightCell(rowIndex: number, columnIndex: number, map: Tile[][]): boolean {
@@ -55,7 +60,7 @@ function roundBottomRightCell(rowIndex: number, columnIndex: number, map: Tile[]
   }
   const right = map[rowIndex][columnIndex + 1];
   const bottom = map[rowIndex + 1][columnIndex];
-  return right.textures.length > 0 && bottom.textures.length > 0 && cell.textures.length > 0 && (right.textures[0].graphic === bottom.textures[0].graphic) && (right.textures[0].graphic !== cell.textures[0].graphic);
+  return right.textures.length > 0 && bottom.textures.length > 0 && cell.textures.length > 0 && (last(right.textures).graphic === last(bottom.textures).graphic) && (last(right.textures).graphic !== last(cell.textures).graphic);
 }
 
 function roundCell(rowIndex: number, columnIndex: number, map: Tile[][], css: React.CSSProperties): React.CSSProperties {
@@ -91,7 +96,7 @@ function raggedOrthogonalCell(rowIndex: number, columnIndex: number, xOffset: nu
     return false
   }
   const neighbor = map[rowIndex + yOffset][columnIndex + xOffset];
-  return !!neighbor && neighbor.textures.length > 0 && cell.textures.length > 0 && (neighbor.textures[0].graphic !== cell.textures[0].graphic);
+  return !!neighbor && neighbor.textures.length > 0 && cell.textures.length > 0 && (last(neighbor.textures).graphic !== last(cell.textures).graphic);
 }
 
 export function AnimationTexture({ graphic, direction, ms, width, height }: { graphic: string, direction: string, ms: number, width: string, height: string }) {
@@ -99,6 +104,7 @@ export function AnimationTexture({ graphic, direction, ms, width, height }: { gr
   const ref = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
+    return;
     if(!globalThis.highPerf) return;
     const initialMarginTop = heightInt + Math.floor(Math.random() * heightInt);
     ref.current?.animate([
@@ -119,7 +125,7 @@ export function AnimationTexture({ graphic, direction, ms, width, height }: { gr
     opacity: 0.2,
   }} ref={ref}>
     <img src={graphic} alt={graphic} style={{ width: width, height: height }} />
-    <img src={graphic} alt={graphic} style={{ width: width, height: height }} />
+    {/* <img src={graphic} alt={graphic} style={{ width: width, height: height }} /> */}
   </div>;
 }
 
@@ -128,21 +134,26 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
   const paths = useRef<number[][]>([]);
   useEffect(() => { 
     if(roundTopLeftCell(rowIndex, cellIndex, map) && rowIndex > 0 && cellIndex > 0) {
-      background.current = map[rowIndex - 1][cellIndex - 1].textures[0].graphic;
+      const neighborCellTextures = map[rowIndex - 1][cellIndex - 1].textures;
+      background.current = neighborCellTextures[neighborCellTextures.length - 1].graphic;
     }
     if(roundTopRightCell(rowIndex, cellIndex, map) && rowIndex > 0 && cellIndex < map[0].length - 1) {
-      background.current = map[rowIndex - 1][cellIndex + 1].textures[0].graphic;
+      const neighborCellTextures = map[rowIndex - 1][cellIndex + 1].textures;
+      background.current = neighborCellTextures[neighborCellTextures.length - 1].graphic;
     }
     if(roundBottomLeftCell(rowIndex, cellIndex, map) && rowIndex < map.length - 1 && cellIndex > 0) {
-      background.current = map[rowIndex + 1][cellIndex - 1].textures[0].graphic;
+      const neighborCellTextures = map[rowIndex + 1][cellIndex - 1].textures;
+      background.current = neighborCellTextures[neighborCellTextures.length - 1].graphic;
     }
     if(roundBottomRightCell(rowIndex, cellIndex, map) && rowIndex < map.length - 1 && cellIndex < map[0].length - 1) {
-      background.current = map[rowIndex + 1][cellIndex + 1].textures[0].graphic;
+      const neighborCellTextures = map[rowIndex + 1][cellIndex + 1].textures;
+      background.current = neighborCellTextures[neighborCellTextures.length - 1].graphic;
     }
     paths.current = [[0,-1],[1,0],[0,1],[-1,0]].reduce<number[][]>((paths, [xOffset,yOffset]) => {
       const ragged = raggedOrthogonalCell(rowIndex, cellIndex, xOffset, yOffset, map);
       if(!background.current && ragged) {
-        background.current = map[rowIndex + yOffset][cellIndex + xOffset].textures[0].graphic;
+        const neighborCellTextures = map[rowIndex + yOffset][cellIndex + xOffset].textures;
+        background.current = neighborCellTextures[neighborCellTextures.length - 1].graphic;
       }
       switch(true) {
         case (xOffset === 0 && yOffset === -1): // top
@@ -202,21 +213,25 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
         let tile = <IndividualTile
           texture={texture} 
           tileDimension={tileDimension} 
-          key={`texture-${rowIndex}-${cellIndex}-${index}`}
+          key={`texture-${rowIndex}-${cellIndex}-${index}-${texture.graphic}`}
           background={background.current}
           style={roundCell(rowIndex, cellIndex, map, {
             width: tileDimension,
             height: tileDimension,
+            top: 0,
+            left: 0,
+            position: "absolute",
             clipPath: paths.current.length? `polygon(${paths.current.map(([x,y]) => `${x}% ${y}%`).join(',')})`: undefined,
           })}
         />;
+
         return <>{tile}{texture.animation.map(c => <AnimationTexture width={tileDimension} height={tileDimension} {...c} />)}</>;
       })}
   </div>
 }
 
 export function IndividualTile({texture,  tileDimension, style, background }: {texture: Texture, tileDimension: string, style?: React.CSSProperties, background?: string}) {
-  return texture.graphic === background? null: <img
+  return <img
     className="tile"
     src={texture.graphic}
     alt={texture.graphic}

@@ -26,7 +26,6 @@ function mapToTable(cells: Tile[], width: number, height: number): Tile[][] {
     }
     table.push(row);
   }
-  console.log(table);
   return table;
 }
 
@@ -70,7 +69,6 @@ export function MapEditor() {
     setSprites(unique(flatten(__sprites)));
   }
   const onSave = (tile: Tile) => {
-    console.log(tile);
     const newMap = map.map(t => t.uuid === tile.uuid? tile: t);
     setMap(newMap);
     setTiles(mapToTable(newMap, width, height));
@@ -153,10 +151,10 @@ export function MapEditor() {
           tileDimension={tileDimension} 
           selectedTile={selectedTile} 
           onSelect={({ tile, action, graphic}: { tile: Tile, action: string, graphic: string}) => {
-            const newTile: Tile = { ...tile };
+            const newTile: Tile = { ...tile, textures: tile.textures.map(t => ({...t})) };
             switch(action) {
               case "add":
-                newTile.textures.push({ graphic, offset: [0,0,0], animation: [] });
+                newTile.textures = newTile.textures.concat({ graphic, offset: [0,0,0], animation: [] });
                 break;
               case "set":
                 newTile.textures = [{ graphic, offset: [0,0,0], animation: [] }];

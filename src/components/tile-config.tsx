@@ -18,14 +18,15 @@ const occupantType = (occupant: any): string => {
 
 export function TileConfig({ tile: originalTile, onSave, onCancel, graphics, sprites }: { tile: Tile, graphics: string[], sprites: string[], onSave: (tile: Tile) => void, onCancel: () => void }) {
   const [tile, setTile] = useState(originalTile);
-  const [tileType, setTileType] = useState(tile.type);
-  const [tileCover, setTileCover] = useState(tile.cover);
-  const [tileElevation, setTileElevation] = useState(tile.elevation);
-  const [tileOpenable, setTileOpenable] = useState(tile.openable);
-  const [tileTextures, setTileTextures] = useState(tile.textures);
-  const [tileOccupant, setTileOccupant] = useState(tile.occupant);
+  const [tileType, setTileType] = useState(originalTile.type);
+  const [tileCover, setTileCover] = useState(originalTile.cover);
+  const [tileElevation, setTileElevation] = useState(originalTile.elevation);
+  const [tileOpenable, setTileOpenable] = useState(originalTile.openable);
+  const [tileTextures, setTileTextures] = useState(originalTile.textures);
+  const [tileOccupant, setTileOccupant] = useState(originalTile.occupant);
   const lastProps = useRef<any>(tile);
   if (lastProps.current !== tile) {
+    console.log("corrupt!");
     setTileType(tile.type);
     setTileCover(tile.cover);
     setTileElevation(tile.elevation);
@@ -154,8 +155,8 @@ export function TileConfig({ tile: originalTile, onSave, onCancel, graphics, spr
                     const t = textures[index];
                     textures[index] = textures[index + 1];
                     textures[index + 1] = t;
-                    setTileTextures(textures.map(t => ({ ...t })));
-                    const newTile = { ...tile, textures: textures.map(t => ({ ...t })) };
+                    setTileTextures(textures);
+                    const newTile = { ...tile, textures };
                     onSave(newTile);
                   }} disabled={index + 1 === tileTextures.length}><FontAwesomeIcon icon={faArrowDown} /></Button>
                 </ButtonGroup>

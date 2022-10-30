@@ -7,6 +7,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
                         {
@@ -31,6 +49,24 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
                 {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
@@ -57,6 +93,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
                         {
@@ -82,6 +136,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
                         {
@@ -106,6 +178,24 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
                 {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
@@ -154,6 +244,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
                         {
@@ -178,6 +286,24 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
                 {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
@@ -204,6 +330,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
                         {
@@ -228,6 +372,24 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
                 {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
@@ -529,6 +691,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
                         {
@@ -553,6 +733,24 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/sand.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
                 {
                     "graphic": "themes/default/textures/water.png",
                     "animation": [
@@ -1029,6 +1227,15 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/sand.png",
                     "animation": [],
                     "offset": {
@@ -1048,6 +1255,15 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/sand.png",
                     "animation": [],
                     "offset": {
@@ -1066,6 +1282,15 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
                 {
                     "graphic": "themes/default/textures/sand.png",
                     "animation": [],
@@ -1842,7 +2067,25 @@
         {
             "cover": 0,
             "elevation": 0,
-            "occupant": null,
+            "occupant": {
+                "textures": [
+                    {
+                        "graphic": "themes/default/sprites/rock-nw.png",
+                        "offset": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "animation": []
+                    }
+                ],
+                "name": {
+                    "en": "themes/default/sprites/rock-nw.png"
+                },
+                "visible": true,
+                "width": 1,
+                "height": 1
+            },
             "openable": false,
             "textures": [
                 {
@@ -1861,7 +2104,25 @@
         {
             "cover": 0,
             "elevation": 0,
-            "occupant": null,
+            "occupant": {
+                "textures": [
+                    {
+                        "graphic": "themes/default/sprites/rock-n.png",
+                        "offset": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "animation": []
+                    }
+                ],
+                "name": {
+                    "en": "themes/default/sprites/rock-n.png"
+                },
+                "visible": true,
+                "width": 1,
+                "height": 1
+            },
             "openable": false,
             "textures": [
                 {
@@ -1880,7 +2141,25 @@
         {
             "cover": 0,
             "elevation": 0,
-            "occupant": null,
+            "occupant": {
+                "textures": [
+                    {
+                        "graphic": "themes/default/sprites/rock-ne.png",
+                        "offset": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "animation": []
+                    }
+                ],
+                "name": {
+                    "en": "themes/default/sprites/rock-ne.png"
+                },
+                "visible": true,
+                "width": 1,
+                "height": 1
+            },
             "openable": false,
             "textures": [
                 {
@@ -2222,9 +2501,45 @@
         {
             "cover": 0,
             "elevation": 0,
-            "occupant": null,
+            "occupant": {
+                "textures": [
+                    {
+                        "graphic": "themes/default/sprites/rock-sw.png",
+                        "offset": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "animation": []
+                    }
+                ],
+                "name": {
+                    "en": "themes/default/sprites/rock-sw.png"
+                },
+                "visible": true,
+                "width": 1,
+                "height": 1
+            },
             "openable": false,
             "textures": [
+                {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
                 {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
@@ -2241,7 +2556,25 @@
         {
             "cover": 0,
             "elevation": 0,
-            "occupant": null,
+            "occupant": {
+                "textures": [
+                    {
+                        "graphic": "themes/default/sprites/rock-s.png",
+                        "offset": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "animation": []
+                    }
+                ],
+                "name": {
+                    "en": "themes/default/sprites/rock-s.png"
+                },
+                "visible": true,
+                "width": 1,
+                "height": 1
+            },
             "openable": false,
             "textures": [
                 {
@@ -2260,7 +2593,25 @@
         {
             "cover": 0,
             "elevation": 0,
-            "occupant": null,
+            "occupant": {
+                "textures": [
+                    {
+                        "graphic": "themes/default/sprites/rock-se.png",
+                        "offset": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "animation": []
+                    }
+                ],
+                "name": {
+                    "en": "themes/default/sprites/rock-se.png"
+                },
+                "visible": true,
+                "width": 1,
+                "height": 1
+            },
             "openable": false,
             "textures": [
                 {
@@ -3043,6 +3394,22 @@
             "openable": false,
             "textures": [
                 {
+                    "uuid": "18db9e7c-4211-4861-b324-a2426f16b36a",
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": [
+                        {
+                            "graphic": "",
+                            "ms": 5000,
+                            "direction": "down"
+                        }
+                    ]
+                },
+                {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
                     "offset": {
@@ -3157,6 +3524,15 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
                     "offset": {
@@ -3175,6 +3551,38 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "uuid": "302ec751-f162-4384-b801-a01bc1932ba7",
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": [
+                        {
+                            "graphic": "",
+                            "ms": 5000,
+                            "direction": "down"
+                        }
+                    ]
+                },
+                {
+                    "uuid": "d9e61b75-63de-4475-bd74-dc0f2f371918",
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": [
+                        {
+                            "graphic": "",
+                            "ms": 5000,
+                            "direction": "down"
+                        }
+                    ]
+                },
                 {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
@@ -3518,6 +3926,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
                     "offset": {
@@ -3537,6 +3963,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
                     "offset": {
@@ -3555,6 +3999,38 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "uuid": "ed519265-7d5c-4294-a7f9-92d4c4fba518",
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": [
+                        {
+                            "graphic": "",
+                            "ms": 5000,
+                            "direction": "down"
+                        }
+                    ]
+                },
+                {
+                    "uuid": "1e5e1e9a-5c87-4838-b7e5-5d14b1429001",
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": [
+                        {
+                            "graphic": "",
+                            "ms": 5000,
+                            "direction": "down"
+                        }
+                    ]
+                },
                 {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
@@ -3860,6 +4336,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
                     "offset": {
@@ -3879,13 +4373,31 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/grass.png",
-                    "animation": [],
-                    "offset": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    }
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
                 }
             ],
             "type": null,
@@ -3897,6 +4409,24 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
                 {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
@@ -4221,6 +4751,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
                     "offset": {
@@ -4239,6 +4787,24 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
                 {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
@@ -4259,6 +4825,24 @@
             "openable": false,
             "textures": [
                 {
+                    "graphic": "themes/default/textures/bedrock.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
+                {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
                     "offset": {
@@ -4277,6 +4861,15 @@
             "occupant": null,
             "openable": false,
             "textures": [
+                {
+                    "graphic": "themes/default/textures/dirt.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
+                },
                 {
                     "graphic": "themes/default/textures/grass.png",
                     "animation": [],
@@ -5670,7 +6263,25 @@
         {
             "cover": 0,
             "elevation": 0,
-            "occupant": null,
+            "occupant": {
+                "textures": [
+                    {
+                        "graphic": "themes/default/textures/crack.png",
+                        "offset": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "animation": []
+                    }
+                ],
+                "name": {
+                    "en": "themes/default/textures/crack.png"
+                },
+                "visible": true,
+                "width": 1,
+                "height": 1
+            },
             "openable": false,
             "textures": [
                 {
@@ -5690,6 +6301,15 @@
                         "y": 0,
                         "z": 0
                     }
+                },
+                {
+                    "graphic": "themes/default/textures/crack.png",
+                    "offset": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "animation": []
                 }
             ],
             "type": null,
