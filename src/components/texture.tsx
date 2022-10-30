@@ -118,8 +118,8 @@ export function AnimationTexture({ graphic, direction, ms, width, height }: { gr
     left: 0,
     opacity: 0.2,
   }} ref={ref}>
-    <img src={`thethirdsequence/${graphic}.png`} alt={graphic} style={{ width: width, height: height }} />
-    <img src={`thethirdsequence/${graphic}.png`} alt={graphic} style={{ width: width, height: height }} />
+    <img src={graphic} alt={graphic} style={{ width: width, height: height }} />
+    <img src={graphic} alt={graphic} style={{ width: width, height: height }} />
   </div>;
 }
 
@@ -194,7 +194,7 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
       gridRow: `${rowIndex + 1}`,
       width: tileDimension,
       height: tileDimension,
-      backgroundImage: background.current? `url(thethirdsequence/${background.current}512.jpg)`: background.current,
+      backgroundImage: background.current? `url(${background.current})`: background.current,
       backgroundSize: background.current? 'cover': background.current,
     }}
     >
@@ -218,7 +218,7 @@ export function CompositeTextureElement({ rowIndex, cellIndex, map, tileDimensio
 export function IndividualTile({texture,  tileDimension, style, background }: {texture: Texture, tileDimension: string, style?: React.CSSProperties, background?: string}) {
   return texture.graphic === background? null: <img
     className="tile"
-    src={`thethirdsequence/${texture.graphic}512.jpg`}
+    src={texture.graphic}
     alt={texture.graphic}
     style={style? style: { 
       width: tileDimension,

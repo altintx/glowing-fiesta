@@ -32,7 +32,7 @@ export function SpriteBrowser({
         const isSelected = selectedTile && selectedTile.occupant && selectedTile.occupant?.textures?.some((t: Texture) => t.graphic === sprite);
         return (<Dropdown key={index} as={ButtonGroup}>
           <Dropdown.Toggle variant={isSelected? 'primary': 'light'}>
-            <img src={`${sprite}.png`} key={index} width={tileDimension} height={tileDimension} />
+            <img src={sprite} key={index} width={tileDimension} height={tileDimension} />
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item disabled={disabled} as="button" onClick={() => selectedTile && onSelect({ graphic: sprite, tile: selectedTile, action: "set" })}>Set Tile's Sprite</Dropdown.Item>

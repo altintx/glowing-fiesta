@@ -4,7 +4,7 @@ import { translate } from "./localized-string";
 export function Obstacle(obstacle: { width: number, height: number, textures: [{ graphic: string }], destroyable: boolean, destructive: boolean, visible: boolean, row: number, column: number, tileDimension: number, rotate: number }): ReactElement {
     return <img
         alt={translate({ en: "Obstacle" }, "en")}
-        src={obstacle.textures[0]['graphic'] + '.png'} 
+        src={obstacle.textures[0]['graphic']} 
         className='tile'
         style={{
             width: `${obstacle.tileDimension * obstacle.width}px`,
