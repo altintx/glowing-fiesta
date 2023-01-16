@@ -2,7 +2,9 @@ import React from 'react';
 import MainMenu from './screen/main-menu';
 import { io, Socket } from 'socket.io-client'
 import GameMenu from './screen/game-menu';
-import { Action, Operator, Tile } from './models/models';
+import { Action } from './models/action';
+import { Operator } from './models/operator';
+import { Tile } from './models/tile';
 import { Game } from './screen/game';
 import { v4 as uuid } from 'uuid';
 import { translate } from './components/localized-string';

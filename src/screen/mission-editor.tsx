@@ -6,7 +6,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useRef, useState } from 'react';
 import Form from 'react-bootstrap/Form';
-import { Tile } from '../models/models';
+import { Tile } from '../models/tile';
 import { v4 as uuid } from 'uuid';
 import { Map } from '../components/map';
 import { SelectionTile } from '../components/selection-tile';

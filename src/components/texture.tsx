@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRef } from 'react';
-import { Texture, Tile } from '../models/models';
-
+import { Texture } from '../models/texture';
+import { Tile } from '../models/tile';
 
 function last(arr: any[]) {
   return arr[arr.length - 1];

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Caption } from '../components/caption';
 import { Menu } from '../components/menu';
-import { Operator } from '../models/models';
+import { Operator } from '../models/operator';
 export default function GameMenu({
     operator, 
     language,

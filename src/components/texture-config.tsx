@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Form, Row, Col } from 'react-bootstrap';
-import { Texture } from "../models/models";
+import { Texture } from "../models/texture";
 import { IndividualTile } from "./texture";
 
 export function TextureConfig({ texture, onChange, graphics }: { texture: Texture, onChange: (texture: Texture) => void, graphics: string[] }) {

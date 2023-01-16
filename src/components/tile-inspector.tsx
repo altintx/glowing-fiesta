@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tile } from '../models/models';
+import { Tile } from '../models/tile';
 import { LocalizedString } from './localized-string';
 
 const FACTIONS = ['Hero', 'Villain'];

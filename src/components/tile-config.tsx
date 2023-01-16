@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { TextureConfig } from "./texture-config";
-import { CoverType, Texture, Tile } from "../models/models";
+import { CoverType } from "../models/cover_type";
+import { Texture } from "../models/texture";
+import { Tile } from "../models/tile";
 import { ObstacleConfig } from "./obstacle-config";
 import { Button, ButtonGroup, ListGroup, ListGroupItem, Row, Col, Card, Stack, Form } from "react-bootstrap";
 import { v4 as uuid } from "uuid";

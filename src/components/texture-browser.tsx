@@ -2,7 +2,7 @@ import { Button, Card, Stack } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { GraphicsList } from '../components/graphics-list';
-import { Tile } from '../models/models';
+import { Tile } from '../models/tile';
 
 export function TextureBrowser({
   selectedTile, 

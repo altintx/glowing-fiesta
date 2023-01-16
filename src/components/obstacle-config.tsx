@@ -1,5 +1,5 @@
 import { Row, Form, Col, ListGroup, Card, ListGroupItem } from 'react-bootstrap';
-import { Texture } from '../models/models';
+import { Texture } from '../models/texture';
 import { TextureConfig } from './texture-config';
 export function ObstacleConfig(props: any) {
   const { occupant, setOccupant } = props;

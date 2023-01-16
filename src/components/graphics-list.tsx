@@ -1,5 +1,5 @@
 import { ButtonGroup, Dropdown } from "react-bootstrap";
-import { Tile } from "../models/models";
+import { Tile } from "../models/tile";
 import { IndividualTile } from "./texture";
 
 export type RenderAsOptions = 'Thumbnails';

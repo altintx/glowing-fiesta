@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Tile } from "../models/models";
+import { Tile } from "../models/tile";
 import { CompositeTextureElement } from "../components/texture";
 import { Obstacle } from "./obstacle";
 

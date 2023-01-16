@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, Stack, Button, ButtonGroup, Dropdown } from "react-bootstrap";
-import { Texture, Tile } from "../models/models";
+import { Tile } from "../models/tile";
+import { Texture } from "../models/texture";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { GraphicsList } from "./graphics-list";
 

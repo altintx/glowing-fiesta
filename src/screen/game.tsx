@@ -1,5 +1,9 @@
 import React, { ReactElement, useEffect, useRef } from "react";
-import { Operator, Tile, Character, Uuid, OperatorArrows } from "../models/models";
+import { Operator } from "../models/operator";
+import { Tile } from "../models/tile";
+import { Character } from "../models/character";
+import { Uuid } from "../models/uuid";
+import { OperatorArrows } from "../models/operator_arrows";
 import { TileInspector } from "../components/tile-inspector";
 import { Viewport } from "../components/viewport";
 import { SelectionTile } from "../components/selection-tile";
