@@ -2,16 +2,18 @@
     border-width: 2px;
     border-radius: 5px;
 }
+/* 
 .radio-button-unselected {
     background-color: transparent;
 }
+ */
 .radio-button-selected {
     background-color: rgba(32,32,32,0.8);
-    color: #fff;
-    text-shadow: 1px 1px #000;
+    color: #090;
+    text-shadow: 1px 1px #eee;
 }
 .radio-button-unselected:hover {
-    background-color: rgba(255,255,255,0.8);
+    background-color: rgba(192,192,192,0.8);
     color: #000;
     text-shadow: 1px 1px #fff;
 }
