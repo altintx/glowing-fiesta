@@ -3,7 +3,7 @@ import { Caption } from './caption';
 import { primaryInput } from 'detect-it';
 import { RadioButton } from './radio-button';
 
-const offsetSize = (isTouch: boolean) => isTouch ? "20px": 0;
+const offsetSize = (isTouch: boolean) => isTouch ? "60px": 0;
 
 export function Viewport({
   children, 
@@ -69,10 +69,10 @@ export function Viewport({
         height: '100%',
         position:'absolute'
     }}>{children}</div>
-    {isTouch && <button style={{position:"absolute",left:0,width:"20px",bottom:0,top:0,zIndex:10000}} onClick={() => setX(x + 32)}> </button>}
-    {isTouch && <button style={{position:"absolute",left:0,top:0,right:0,height:"20px",zIndex:10000}} onClick={() => setY(y + 32)}> </button>}
-    {isTouch && <button style={{position:"absolute",left:0,bottom:0,right:0,height:"20px",zIndex:10000}} onClick={() => setY(y - 32)}> </button>}
-    {isTouch && <button style={{position:"absolute",top:0,right:0,bottom:0,width:"20px",zIndex:10000}} onClick={() => setX(x - 32)}> </button>}
+    {isTouch && <button style={{position:"absolute",left:0,width:offset,bottom:0,top:0,zIndex:10000}} onClick={() => setX(x + 64)}> </button>}
+    {isTouch && <button style={{position:"absolute",left:0,top:0,right:0,height:offset,zIndex:10000}} onClick={() => setY(y + 64)}> </button>}
+    {isTouch && <button style={{position:"absolute",left:0,bottom:0,right:0,height:offset,zIndex:10000}} onClick={() => setY(y - 64)}> </button>}
+    {isTouch && <button style={{position:"absolute",top:0,right:0,bottom:0,width:offset,zIndex:10000}} onClick={() => setX(x - 64)}> </button>}
     {actionBar && <div style={{
         bottom: 0,
         position: 'absolute',
